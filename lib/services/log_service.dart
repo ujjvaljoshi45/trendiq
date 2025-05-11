@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:trendiq/services/toast_service.dart';
 
 class LogService {
   static final LogService _instance = LogService._();
@@ -66,11 +65,7 @@ class LogService {
 
   void shareLog() async {
     if (loggerFilePath == null) {
-      ToastService().showToast(
-        title: "Log Share",
-        message: "Unable to fetch logs",
-        isError: true,
-      );
+
       return;
     }
     await Share.shareXFiles([XFile(loggerFilePath!)]);

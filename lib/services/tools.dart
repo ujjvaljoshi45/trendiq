@@ -6,13 +6,6 @@ class Tools {
   factory Tools() => _instance;
   double getWith(context) => MediaQuery.of(context).size.width;
   double getHeight(context) => MediaQuery.of(context).size.height;
-  SizedBox sizeH(num num) => SizedBox(
-        height: num.toDouble(),
-      );
-  SizedBox sizeW(num num) => SizedBox(
-        width: num.toDouble(),
-      );
-
   static InputDecoration baseInputDecoration(ThemeData theme) =>
       InputDecoration(
         border: OutlineInputBorder(

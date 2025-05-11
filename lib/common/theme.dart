@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trendiq/constants/fonts.dart';
 
 abstract class MyColors {
   static const Color primaryColor = Color(0xFFDC2626);
@@ -11,6 +12,7 @@ ThemeData lightTheme = ThemeData(
     primary: MyColors.primaryColor,
     secondary: MyColors.primaryColor,
   ),
+  fontFamily: Fonts.fontRegular,
   appBarTheme: AppBarTheme(
     backgroundColor: MyColors.primaryColor,
     foregroundColor: Colors.white,
@@ -41,6 +43,7 @@ ThemeData lightTheme = ThemeData(
 
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
+  fontFamily: Fonts.fontRegular,
   primaryColor: MyColors.primaryColor,
   colorScheme: ColorScheme.dark(
     primary: MyColors.primaryColor,

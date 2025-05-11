@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:trendiq/common/colors.dart';
+import 'package:trendiq/common/theme.dart';
 
 class CommonTextField extends StatelessWidget {
   const CommonTextField({

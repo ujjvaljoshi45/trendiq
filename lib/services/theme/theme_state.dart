@@ -12,7 +12,3 @@ class ThemeStateLight extends ThemeState {
 class ThemeStateDark extends ThemeState {
   const ThemeStateDark() : super(ThemeMode.dark);
 }
-
-class ThemeStateSystem extends ThemeState {
-  const ThemeStateSystem() : super(ThemeMode.system);
-}

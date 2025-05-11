@@ -9,7 +9,3 @@ class SetLightTheme extends ThemeEvent {
 class SetDarkTheme extends ThemeEvent {
   const SetDarkTheme();
 }
-
-class SetSystemTheme extends ThemeEvent {
-  const SetSystemTheme();
-}

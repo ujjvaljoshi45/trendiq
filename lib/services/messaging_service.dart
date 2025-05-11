@@ -54,15 +54,12 @@ class MessagingService {
 
   Future<FcmData?> generateNewFcmData() async {
     String? token = await generateNewToken();
-
     if (token == null) {
       return null;
     } else {
       FcmData fcmData = FcmData(token: token, createdAt: DateTime.now());
-
       await saveTokenToStorage(fcmData);
       await saveFcmToServer(fcmData);
-
       return fcmData;
     }
   }
