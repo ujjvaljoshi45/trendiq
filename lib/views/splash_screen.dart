@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:trendiq/constants/fonts.dart';
+import 'package:trendiq/generated/assets.dart';
+import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/services/connectivity_service.dart';
 
 import '../constants/route_key.dart';
@@ -30,13 +31,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: Center(
-        child: Text(
-          "TrendiQ",
-          style: commonTextStyle(fontSize: 24, fontFamily: "Poppins-Bold"),
-        ),
-      ),
+      backgroundColor: appColors.secondary,
+      body: Center(child: Image.asset(Assets.assetsLogo, width: 150, height: 150,),),
     );
   }
 }

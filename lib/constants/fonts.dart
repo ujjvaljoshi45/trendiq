@@ -20,3 +20,9 @@ TextStyle commonTextStyle({
   fontFamily: fontFamily ?? Fonts.fontRegular,
   height: height,fontWeight: fontWeight
 );
+
+TextStyle headerTextStyle({double? fontSize, Color? color}) => commonTextStyle(
+  fontSize: fontSize ?? 24,
+  fontFamily: Fonts.fontBold,
+  color: color
+);

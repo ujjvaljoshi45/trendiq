@@ -48,7 +48,7 @@ class LogService {
     consoleLogger?.d(message, time: DateTime.now());
   }
 
-  void logError(String message, Object? error, StackTrace? stackTrace) {
+  void logError(String? message, Object? error, StackTrace? stackTrace) {
     fileLogger?.e(
       message,
       error: error,
@@ -65,9 +65,8 @@ class LogService {
 
   void shareLog() async {
     if (loggerFilePath == null) {
-
       return;
     }
-    await Share.shareXFiles([XFile(loggerFilePath!)]);
+    await SharePlus.instance.share(ShareParams(files: [XFile(loggerFilePath!)]));
   }
 }

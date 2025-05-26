@@ -1,5 +1,4 @@
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -13,12 +12,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   void _homeUpdate(LoadHome event, Emitter<HomeState> emit) {
     gender = event.gender;
-    emit(HomeLoading(gender));
+    emit(HomeLoading());
   }
 
   void _homeLoaded(HomeLoadedEvent event, Emitter<HomeState> emit) {
-    gender = event.gender;
-    emit(HomeLoaded(gender));
+    emit(HomeLoaded());
   }
 
 }

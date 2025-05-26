@@ -4,7 +4,7 @@ class Keys {
   static const String username = 'username';
   static const String email = 'email';
   static const String password = 'password';
-  static const String token = 'token';
+  static const String newPassword = 'newPassword';
   static const String profile = 'profile';
   static const String createdAt = 'createdAt';
   static const String updatedAt = 'updatedAt';
@@ -22,8 +22,6 @@ class Keys {
   static const String productId = 'productId';
   static const String orderId = 'orderId';
   static const String amount = 'amount';
-  static const String finalAmount =
-      'finalAmout'; // Notice typo in schema, using same
   static const String discount = 'discount';
   static const String delivery = 'delivery';
   static const String userId = 'userId';
@@ -32,6 +30,17 @@ class Keys {
   static const String paymentToken = 'paymentToken';
   static const String paymentMethod = 'paymentMethod';
   static const String status = 'status';
-
   static const String inr = '₹';
+  static const String fcmToken = "fcmToken";
+
+  static const String statusCode = 'statusCode';
+  static const String message = "message";
+  static const String data = "data";
+  static const String token = 'token';
+  static const String user = 'user';
+  static const String google = "google";
+  static const String facebook = "facebook";
+  static const String apple = "apple";
+  static const String source = "source";
+  static const String app = "app";
 }

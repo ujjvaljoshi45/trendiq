@@ -28,7 +28,7 @@ class TrendingProductsModel {
       );
 
   factory TrendingProductsModel.dummy() => TrendingProductsModel(
-    statusCode: 200,
+    statusCode: 299,
     message: "loading",
     banner: List.generate(
       3,

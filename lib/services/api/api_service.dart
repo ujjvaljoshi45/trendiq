@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:trendiq/common/routes.dart';
+import 'package:trendiq/constants/route_key.dart';
+import 'package:trendiq/constants/user_singleton.dart';
 import 'package:trendiq/services/api/api_constants.dart';
-import 'package:trendiq/services/app_colors.dart';
-import 'package:trendiq/services/extensions.dart';
 import 'package:trendiq/services/toast_service.dart';
 
 class ApiService {
@@ -34,7 +34,7 @@ class ApiService {
           requestHeader: true,
           logPrint: (object) => debugPrint(object.toString()),
         ),
-      RenderInterceptor()
+      AuthInterceptor(),
     ]);
   }
 
@@ -118,42 +118,28 @@ class ApiService {
   }
 }
 
-class RenderInterceptor extends Interceptor {
+class AuthInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.headers.addAll({
+      "Authorization": "Bearer ${UserSingleton().user?.token}"
+    });
+    super.onRequest(options, handler);
+  }
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    if ((err.response?.statusCode ?? 0) >= 500) {
+    if (err.response?.statusCode == 401) {
+      UserSingleton().clearUser();
+      ToastService().showToast(
+          "User Not Authorized Logging Out", isError: true);
       try {
-        showDialog(
-          context: Routes().navigatorKey.currentContext!,
-          builder: (context) {
-            return Dialog(
-              backgroundColor: appColors.background,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Render is offline please wait for 60 seconds and retry"),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                      TextButton(onPressed: (){
-                        Navigator.pop(context);
-                      }, child: Text("Back")),8.sBw,
-                      ElevatedButton(onPressed: (){}, child: Text("Retry"))
-                    ],)
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+        Navigator
+            .of(Routes().navigatorKey.currentContext!)
+            .pushNamedAndRemoveUntil(RoutesKey.home, (route) => false);
       } catch (e) {
-        ToastService().showToast("Render is Down please wait");
+        ToastService().showToast(
+            "Please Login to Continue", isInformation: true);
       }
     }
     super.onError(err, handler);

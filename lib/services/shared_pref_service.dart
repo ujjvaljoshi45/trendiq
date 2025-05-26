@@ -1,15 +1,54 @@
-import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'dart:convert';
+
+import 'package:trendiq/models/user_model.dart';
+import 'package:trendiq/services/log_service.dart';
 
 class Storage {
   static Storage? _instance;
-  // SharedPreferences? prefs;
-  GetStorage box = GetStorage();
+  late final SharedPreferences _prefs;
+
   factory Storage() => _instance ??= Storage._();
+
   Storage._();
-  Future<void> saveFcmData(value) async => await (box).write("fcmData", value);
-  Future<String?> getFcmData() async => (box).read("fcmData");
-  Future<void> saveIsDarkTheme(value) async =>
-      await (box).write("isDark", value);
-  Future<bool> getIsDarkTheme() async => await (box).read("isDark");
-  Future<void> clear() async => await (box).erase();
+
+  Future<void> init() async => _prefs = await SharedPreferences.getInstance();
+
+  // Theme
+  Future<void> saveIsDarkTheme(bool value) async {
+    final prefs = _prefs;
+    await prefs.setBool("isDark", value);
+  }
+
+  Future<bool> getIsDarkTheme() async {
+    final prefs = _prefs;
+    return prefs.getBool("isDark") ?? false;
+  }
+
+  Future<void> clear() async {
+    final prefs = _prefs;
+    await prefs.clear();
+  }
+
+  //region User
+  Future<void> saveUser(UserModel user) async {
+    final prefs = _prefs;
+    final json = jsonEncode(user.toJson());
+    await prefs.setString("user", json);
+  }
+
+  Future<UserModel?> getUser() async {
+    final prefs = _prefs;
+    final json = prefs.getString("user");
+    if (json == null) return null;
+    return UserModel.fromJson(jsonDecode(json));
+  }
+
+  Future<void> clearUser() async {
+    final prefs = _prefs;
+    await prefs.remove("user");
+  }
+
+  //endregion
 }

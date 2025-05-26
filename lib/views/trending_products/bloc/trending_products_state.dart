@@ -1,5 +1,3 @@
-import 'package:trendiq/models/trending_products_model.dart';
-
 abstract class TrendingProductsState {}
 
 class TrendingProductsInitial extends TrendingProductsState {}
@@ -7,8 +5,7 @@ class TrendingProductsInitial extends TrendingProductsState {}
 class TrendingProductsLoading extends TrendingProductsState {}
 
 class TrendingProductsLoaded extends TrendingProductsState {
-  final TrendingProductsModel trendingProductsModel;
-  TrendingProductsLoaded(this.trendingProductsModel);
+  TrendingProductsLoaded();
 }
 
 class TrendingProductsError extends TrendingProductsState {

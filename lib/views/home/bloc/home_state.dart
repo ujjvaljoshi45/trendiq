@@ -1,13 +1,11 @@
 part of 'home_bloc.dart';
 
-@immutable
-sealed class HomeState {}
+abstract class HomeState {}
 
 final class HomeInitial extends HomeState {}
 
 class HomeLoading extends HomeState {
-  final String gender;
-  HomeLoading(this.gender);
+  HomeLoading();
 }
 
 class HomeError extends HomeState {
@@ -17,7 +15,5 @@ class HomeError extends HomeState {
 }
 
 class HomeLoaded extends HomeState {
-  final String gender;
-
-  HomeLoaded(this.gender);
+  HomeLoaded();
 }

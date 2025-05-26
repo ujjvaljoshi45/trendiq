@@ -1,48 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:toastification/toastification.dart';
+import 'package:trendiq/constants/fonts.dart';
 
 class ToastService {
   static final ToastService _instance = ToastService._();
   ToastService._();
   factory ToastService() => _instance;
-  ToastificationStyle toastificationStyle = ToastificationStyle.flatColored;
+  ToastificationStyle toastificationStyle = ToastificationStyle.minimal;
   // int selected = 1;
   void showToast(String message,
       {bool isError = false, bool isInformation = false, int seconds = 3}) {
 
     final ToastificationType toastificationType;
-    final String title;
-
     if (isError) {
       toastificationType = ToastificationType.error;
-      title = "Error";
+
     } else if (isInformation) {
       toastificationType = ToastificationType.info;
-      title = "Note";
+
     } else {
       toastificationType = ToastificationType.success;
-      title = "Success";
     }
     toastification.show(
-      style: toastificationStyle,
+      style: ToastificationStyle.fillColored,
       showProgressBar: false,
       showIcon: false,
       type: toastificationType,
-      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 0.h),
-      margin: EdgeInsets.symmetric(vertical: 50.h, horizontal: 20.w),
+      closeButton: ToastCloseButton(showType: CloseButtonShowType.none),
       autoCloseDuration: Duration(seconds: seconds),
       animationDuration: Duration(milliseconds: 100),
       borderRadius: BorderRadius.circular(6.r),
       dragToClose: true,
-      closeOnClick: true,
+      closeOnClick: false,
       alignment: Alignment.bottomCenter,
+      borderSide: BorderSide(width: 0),
+
       title: Text(
-        title,
-      ),
-      description: Text(
-        message,
-      ),
+        message,style: commonTextStyle(fontFamily: Fonts.fontMedium),
+      )
     );
   }
 }

@@ -1,21 +1,18 @@
-import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:trendiq/services/toast_service.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
-class Tools {
-  Tools._();
-  static final Tools _instance = Tools._();
-  factory Tools() => _instance;
-  double getWith(context) => MediaQuery.of(context).size.width;
-  double getHeight(context) => MediaQuery.of(context).size.height;
-  static InputDecoration baseInputDecoration(ThemeData theme) =>
-      InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        labelStyle: TextStyle(color: theme.colorScheme.primary),
-        prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: BorderSide(color: theme.colorScheme.primary),
-        ),
-      );
+void launchUrl(String url) async {
+  try {
+    await launchUrlString(url, mode: LaunchMode.externalApplication);
+  } catch (e) {
+    ToastService().showToast("Unable to launch URL", isError: true);
+  }
+}
+
+String getDateStr(DateTime date) {
+  final res = DateFormat.yMMMMd().format(date);
+  return res.splitMapJoin(",",onMatch: (p0) {
+    return "${res[p0.start]}\n${res[p0.end]}";
+  },);
 }

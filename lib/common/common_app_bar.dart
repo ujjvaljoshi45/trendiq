@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trendiq/common/theme.dart';
 import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/services/app_colors.dart';
+import 'package:trendiq/services/theme/theme_bloc.dart';
+import 'package:trendiq/services/theme/theme_state.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -23,27 +26,29 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: backgroundColor ?? appColors.surface,
-      elevation: elevation,
-      leading: showBackButton
-          ? IconButton(
-        icon: const Icon(Icons.arrow_back),
-        color: titleColor,
-        onPressed: () => Navigator.of(context).pop(),
-      )
-          : null,
-      title: Text(
-        title,
-        style: commonTextStyle(
-          color: titleColor ?? MyColors.primaryColor,
-          fontFamily: Fonts.fontSemiBold,
-          fontSize: 18,
+    return BlocBuilder<ThemeBloc,ThemeState>(builder: (context, state) {
+      return AppBar(
+        backgroundColor: backgroundColor ?? appColors.surface,
+        elevation: elevation,
+        leading: showBackButton
+            ? IconButton(
+          icon: Icon(Icons.arrow_back,color: appColors.onSecondary,),
+          color: titleColor,
+          onPressed: () => Navigator.of(context).pop(),
+        )
+            : null,
+        title: Text(
+          title,
+          style: commonTextStyle(
+            color: titleColor ?? MyColors.primaryColor,
+            fontFamily: Fonts.fontSemiBold,
+            fontSize: 18,
+          ),
         ),
-      ),
-      centerTitle: true,
-      actions: actions,
-    );
+        centerTitle: false,
+        actions: actions,
+      );
+    },);
   }
 
   @override

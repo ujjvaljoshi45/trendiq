@@ -59,7 +59,7 @@ class _AboutUsTabBarState extends State<AboutUsTabBar>
             labelColor: appColors.white,
             unselectedLabelColor: appColors.onTertiary,
             indicator: BoxDecoration(
-              color: appColors.primary,
+              color: appColors.primary.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(8),
             ),
             labelPadding: const EdgeInsets.symmetric(

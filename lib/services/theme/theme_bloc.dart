@@ -6,11 +6,11 @@ import 'package:trendiq/services/theme/theme_state.dart';
 class ThemeBloc extends HydratedBloc<ThemeEvent, ThemeState> {
   ThemeBloc() : super(const ThemeStateLight()) {
     on<SetDarkTheme>((event, emit) {
-      appColors.isDark = true;
+      appColors.setIsDark(true);
       emit(const ThemeStateDark());
     });
     on<SetLightTheme>((event, emit) {
-      appColors.isDark = false;
+      appColors.setIsDark(false);
       emit(const ThemeStateLight());
     });
   }
@@ -20,14 +20,14 @@ class ThemeBloc extends HydratedBloc<ThemeEvent, ThemeState> {
     final mode = json['themeData'] as String?;
     switch (mode) {
       case 'light':
-        appColors.isDark = false;
+        appColors.setIsDark(false);
         return const ThemeStateLight();
       case 'dark':
-        appColors.isDark = true;
+        appColors.setIsDark(true);
         return const ThemeStateDark();
       case 'system':
       default:
-      appColors.isDark = false;
+        appColors.setIsDark(false);
         return const ThemeStateLight();
     }
   }

@@ -9,59 +9,62 @@ class AppColors {
 
   factory AppColors() => _instance;
 
-  bool isDark = false;
+  bool _isDark = false;
+  bool get isDark => _isDark;
+  void setIsDark(bool val) =>  _isDark = val;
 
   Color get background =>
-      isDark ? _DarkColors.background : _LightColors.background;
+      _isDark ? _DarkColors.background : _LightColors.background;
+  Color get transparent => Colors.transparent;
 
   Color get onBackground =>
-      isDark ? _DarkColors.onBackground : _LightColors.onBackground;
+      _isDark ? _DarkColors.onBackground : _LightColors.onBackground;
 
-  Color get surface => isDark ? _DarkColors.surface : _LightColors.surface;
+  Color get surface => _isDark ? _DarkColors.surface : _LightColors.surface;
 
   Color get onSurface =>
-      isDark ? _DarkColors.onSurface : _LightColors.onSurface;
+      _isDark ? _DarkColors.onSurface : _LightColors.onSurface;
 
   Color get surfaceVariant =>
-      isDark ? _DarkColors.surfaceVariant : _LightColors.surfaceVariant;
+      _isDark ? _DarkColors.surfaceVariant : _LightColors.surfaceVariant;
 
   Color get onSurfaceVariant =>
-      isDark ? _DarkColors.onSurfaceVariant : _LightColors.onSurfaceVariant;
+      _isDark ? _DarkColors.onSurfaceVariant : _LightColors.onSurfaceVariant;
 
-  Color get primary => isDark ? _DarkColors.primary : _LightColors.primary;
+  Color get primary => _isDark ? _DarkColors.primary : _LightColors.primary;
 
   Color get onPrimary =>
-      isDark ? _DarkColors.onPrimary : _LightColors.onPrimary;
+      _isDark ? _DarkColors.onPrimary : _LightColors.onPrimary;
 
   Color get secondary =>
-      isDark ? _DarkColors.secondary : _LightColors.secondary;
+      _isDark ? _DarkColors.secondary : _LightColors.secondary;
 
   Color get onSecondary =>
-      isDark ? _DarkColors.onSecondary : _LightColors.onSecondary;
+      _isDark ? _DarkColors.onSecondary : _LightColors.onSecondary;
 
-  Color get tertiary => isDark ? _DarkColors.tertiary : _LightColors.tertiary;
+  Color get tertiary => _isDark ? _DarkColors.tertiary : _LightColors.tertiary;
 
   Color get onTertiary =>
-      isDark ? _DarkColors.onTertiary : _LightColors.onTertiary;
+      _isDark ? _DarkColors.onTertiary : _LightColors.onTertiary;
 
   Color get tertiaryContainer =>
-      isDark ? _DarkColors.tertiaryContainer : _LightColors.tertiaryContainer;
+      _isDark ? _DarkColors.tertiaryContainer : _LightColors.tertiaryContainer;
 
   Color get onTertiaryContainer =>
-      isDark
+      _isDark
           ? _DarkColors.onTertiaryContainer
           : _LightColors.onTertiaryContainer;
 
-  Color get error => isDark ? _DarkColors.error : _LightColors.error;
+  Color get error => _isDark ? _DarkColors.error : _LightColors.error;
 
-  Color get onError => isDark ? _DarkColors.onError : _LightColors.onError;
+  Color get onError => _isDark ? _DarkColors.onError : _LightColors.onError;
 
-  Color get outline => isDark ? _DarkColors.outline : _LightColors.outline;
+  Color get outline => _isDark ? _DarkColors.outline : _LightColors.outline;
 
   Color get surfaceTint =>
-      isDark ? _DarkColors.surfaceTint : _LightColors.surfaceTint;
+      _isDark ? _DarkColors.surfaceTint : _LightColors.surfaceTint;
 
-  Color get shadow => isDark ? _DarkColors.shadow : _LightColors.shadow;
+  Color get shadow => _isDark ? _DarkColors.shadow : _LightColors.shadow;
 
   //region Common Colors
   Color get white => Color(0xffffffff);
