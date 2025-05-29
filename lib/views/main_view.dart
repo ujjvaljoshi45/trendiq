@@ -41,6 +41,9 @@ class _MainViewState extends State<MainView> with TickerProviderStateMixin {
       appBar: CommonAppBar(
         title: "TrendiQ",
         actions: [
+          IconButton(onPressed: () {
+            Navigator.pushNamed(context, RoutesKey.productsList);
+          }, icon: Icon(Icons.search,color: MyColors.primaryColor,)),
           IconButton(
             onPressed: () {
               final user = UserSingleton().user;

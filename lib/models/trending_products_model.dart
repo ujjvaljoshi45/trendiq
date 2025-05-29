@@ -1,3 +1,5 @@
+import 'package:trendiq/models/product.dart';
+
 class TrendingProductsModel {
   int statusCode;
   List<Datum> data;
@@ -188,6 +190,27 @@ class Datum {
     category: Category.fromJson(json["category"]),
   );
 
+  Product toProduct() => Product(
+    id: id,
+    title: title,
+    description: description,
+    markupDescription: markupDescription,
+    categoryId: categoryId,
+    color: color,
+    gender: gender,
+    isTrending: isTrending,
+    adminId: adminId,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+    publicId: publicId,
+    imageUrl: imageUrl,
+    category: category,
+    productInventory: productInventory,
+    wishlist: [],
+    productImages: [],
+    availableColors: [],
+  );
+
   Map<String, dynamic> toJson() => {
     "id": id,
     "title": title,
@@ -206,90 +229,5 @@ class Datum {
       productInventory.map((x) => x.toJson()),
     ),
     "category": category.toJson(),
-  };
-}
-
-class Category {
-  String id;
-  String name;
-  String description;
-  DateTime createdAt;
-  DateTime updatedAt;
-  String publicId;
-  String imageUrl;
-  String gender;
-
-  Category({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.publicId,
-    required this.imageUrl,
-    required this.gender,
-  });
-
-  factory Category.fromJson(Map<String, dynamic> json) => Category(
-    id: json["id"] ?? "-",
-    name: json["name"] ?? "-",
-    description: json["description"] ?? "-",
-    createdAt: DateTime.parse(json["createdAt"] ?? "-"),
-    updatedAt: DateTime.parse(json["updatedAt"] ?? "-"),
-    publicId: json["publicId"] ?? "-",
-    imageUrl: json["imageUrl"] ?? "-",
-    gender: json["gender"] ?? "-",
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "description": description,
-    "createdAt": createdAt.toIso8601String(),
-    "updatedAt": updatedAt.toIso8601String(),
-    "publicId": publicId,
-    "imageUrl": imageUrl,
-    "gender": gender,
-  };
-}
-
-class ProductInventory {
-  String id;
-  String sizeId;
-  String productId;
-  int price;
-  int stock;
-  int minimumStock;
-  int discount;
-
-  ProductInventory({
-    required this.id,
-    required this.sizeId,
-    required this.productId,
-    required this.price,
-    required this.stock,
-    required this.minimumStock,
-    required this.discount,
-  });
-
-  factory ProductInventory.fromJson(Map<String, dynamic> json) =>
-      ProductInventory(
-        id: json["id"] ?? "-",
-        sizeId: json["sizeId"] ?? "-",
-        productId: json["productId"] ?? "-",
-        price: json["price"] ?? 0,
-        stock: json["stock"] ?? 0,
-        minimumStock: json["minimum_stock"] ?? 0,
-        discount: json["discount"] ?? 0,
-      );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "sizeId": sizeId,
-    "productId": productId,
-    "price": price,
-    "stock": stock,
-    "minimum_stock": minimumStock,
-    "discount": discount,
   };
 }

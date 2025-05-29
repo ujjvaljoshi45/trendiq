@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/constants/keys.dart';
 import 'package:trendiq/generated/assets.dart';
+import 'package:trendiq/models/product.dart';
 import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/services/extensions.dart';
 import 'package:trendiq/services/toast_service.dart';
@@ -12,7 +14,7 @@ Widget commonPriceTag({
   int spacingC = 5,
   String? strikeOutPrice,
   double fontSize = 12,
-  Color fontColor = Colors.black,
+  Color? fontColor,
   String? fontStyle,
   double strikePriceSize = 10,
 }) {
@@ -20,12 +22,18 @@ Widget commonPriceTag({
     children: [
       Text(
         Keys.inr,
-        style: commonTextStyle(fontFamily: fontStyle ?? Fonts.fontMedium),
+        style: commonTextStyle(
+          fontFamily: fontStyle ?? Fonts.fontMedium,
+          color: fontColor,
+        ),
       ),
       spacingW.sBw,
       Text(
         price,
-        style: commonTextStyle(fontFamily: fontStyle ?? Fonts.fontMedium),
+        style: commonTextStyle(
+          fontFamily: fontStyle ?? Fonts.fontMedium,
+          color: fontColor,
+        ),
       ),
       if (strikeOutPrice != null) ...[
         spacingC.sBw,
@@ -33,7 +41,8 @@ Widget commonPriceTag({
           strikeOutPrice.toString(),
           style: commonTextStyle(
             fontSize: strikePriceSize,
-          ).copyWith(decoration: TextDecoration.lineThrough),
+            color: fontColor?.withValues(alpha: 0.8),
+          ).copyWith(decoration: TextDecoration.lineThrough,decorationColor: fontColor?.withValues(alpha: 0.8) ?? appColors.onSurface),
         ),
       ],
     ],
@@ -80,7 +89,7 @@ Widget shopByCategoryButton() {
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       decoration: BoxDecoration(
-        color: appColors.primary.withValues(alpha: 0.6),
+        color: appColors.primary.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Row(
@@ -266,3 +275,67 @@ Widget orContinueWithDivider() => Row(
     Expanded(child: Divider(color: appColors.outline, thickness: 1)),
   ],
 );
+
+Widget commonProductCard({required Product product, void Function()? onTap}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: appColors.cardBg,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: appColors.tertiaryContainer),
+      boxShadow: [
+        BoxShadow(
+          color: appColors.black.withOpacity(0.05),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Material(
+      color: appColors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(product.imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+              8.sBh,
+              Text(
+                product.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: commonTextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+              4.sBh,
+              commonPriceTag(
+                price:
+                    (product.productInventory.firstOrNull?.price ?? "-")
+                        .toString(),
+                strikeOutPrice:
+                    ((product.productInventory.firstOrNull?.discount ?? 0) > 0)
+                        ? (product.productInventory.first.price +
+                                product.productInventory.first.discount)
+                            .toString()
+                        : null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}

@@ -18,6 +18,7 @@ import 'package:trendiq/services/theme/theme_state.dart';
 import 'package:trendiq/views/auth_view/bloc/auth_bloc.dart';
 import 'package:trendiq/views/category_view/bloc/category_bloc.dart';
 import 'package:trendiq/views/home/bloc/home_bloc.dart';
+import 'package:trendiq/views/search_view/bloc/search_bloc.dart';
 import 'package:trendiq/views/trending_products/bloc/trending_products_bloc.dart';
 import 'package:trendiq/services/shared_pref_service.dart' as pref;
 
@@ -36,6 +37,8 @@ void main() async {
             BlocProvider(create: (_) => HomeBloc()),
             BlocProvider(create: (_) => TrendingProductsBloc()),
             BlocProvider(create: (_) => CategoryBloc()),
+            BlocProvider(create: (_) => SearchBloc()),
+
           ],
           child: MyApp(),
         ),

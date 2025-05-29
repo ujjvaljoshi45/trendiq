@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/services/extensions.dart';
 import 'package:trendiq/services/messaging_service.dart';
 import 'package:trendiq/views/category_view/bloc/category_bloc.dart';
@@ -59,7 +58,6 @@ class _HomeViewState extends State<HomeView>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-
                 TrendingProductView(),
                 18.sBh,
                 CategoryListView(),

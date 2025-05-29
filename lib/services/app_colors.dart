@@ -71,6 +71,13 @@ class AppColors {
 
   Color get black => Color(0xff000000);
   //endregion
+
+Color get cardBg => _isDark ? _DarkColors.tertiaryContainer : _LightColors.background;
+
+
+  Color get lightGrey => _isDark ? _DarkColors.lightGrey : _LightColors.lightGrey;
+  Color get mediumGrey => _isDark ? _DarkColors.mediumGrey : _LightColors.mediumGrey;
+  Color get darkGrey => _isDark ? _DarkColors.darkGrey : _LightColors.darkGrey;
 }
 
 // Light mode colors
@@ -102,6 +109,11 @@ abstract class _LightColors {
   static const outline = Color(0xFFD9D9D9);
   static const surfaceTint = Color(0xFF993333);
   static const shadow = Color(0xFFDC2626);
+
+
+  static const Color lightGrey = Color(0xFFE5E5EA);
+  static const Color mediumGrey = Color(0xFFC7C7CC);
+  static const Color darkGrey = Color(0xFF8E8E93);
 }
 
 // Dark mode colors
@@ -133,4 +145,8 @@ abstract class _DarkColors {
   static const outline = Color(0xFF803232);
   static const surfaceTint = Color(0xFF993333);
   static const shadow = Color(0xFFDC2626);
+
+  static const Color lightGrey = Color(0xFF48484A);
+  static const Color mediumGrey = Color(0xFF636366);
+  static const Color darkGrey = Color(0xFF8E8E93);
 }

@@ -30,9 +30,10 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       return AppBar(
         backgroundColor: backgroundColor ?? appColors.surface,
         elevation: elevation,
+        automaticallyImplyLeading: false,
         leading: showBackButton
             ? IconButton(
-          icon: Icon(Icons.arrow_back,color: appColors.onSecondary,),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,color: appColors.onSecondary,),
           color: titleColor,
           onPressed: () => Navigator.of(context).pop(),
         )

@@ -7,4 +7,5 @@ abstract class RoutesKey {
   static const String updatePassword = 'updatePassword';
   static const String support = 'support';
   static const String address = 'address';
+  static const String productsList = 'productsList';
 }

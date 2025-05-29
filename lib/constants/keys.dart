@@ -43,4 +43,9 @@ class Keys {
   static const String apple = "apple";
   static const String source = "source";
   static const String app = "app";
+  static const String page = "page";
+  static const String size = "size";
+  static const String search = "search";
+  static const String userEmail = "userEmail";
+  static const String gender = "gender";
 }

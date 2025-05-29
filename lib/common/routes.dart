@@ -6,6 +6,7 @@ import 'package:trendiq/views/main_view.dart';
 import 'package:trendiq/views/profile/address/address_view.dart';
 import 'package:trendiq/views/profile/support/support.dart';
 import 'package:trendiq/views/profile/update_password_view.dart';
+import 'package:trendiq/views/search_view/products_list_view.dart';
 import 'package:trendiq/views/splash_screen.dart';
 
 import '../constants/route_key.dart';
@@ -18,8 +19,8 @@ class Routes {
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     final builder = routeMap[settings.name];
     return builder != null
-        ? MaterialPageRoute(builder: builder)
-        : MaterialPageRoute(builder: (_) => SplashScreen());
+        ? MaterialPageRoute(builder: builder,settings: settings)
+        : MaterialPageRoute(builder: (_) => SplashScreen(),settings: settings);
   }
 
   final Map<String, WidgetBuilder> routeMap = {
@@ -31,6 +32,7 @@ class Routes {
     RoutesKey.updatePassword: (_) => UpdatePasswordView(),
     RoutesKey.support: (_) => SupportView(),
     RoutesKey.address: (_) => AddressView(),
+    RoutesKey.productsList: (_) => ProductsListView(),
   };
 }
 
