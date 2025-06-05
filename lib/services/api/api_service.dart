@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,12 +30,12 @@ class ApiService {
       if (kDebugMode)
         LogInterceptor(
           error: true,
-          responseBody: true,
-          request: true,
-          requestBody: true,
-          responseHeader: true,
-          requestHeader: true,
-          logPrint: (object) => debugPrint(object.toString()),
+          responseBody: false,
+          request: false,
+          requestBody: false,
+          requestHeader: false,
+          responseHeader: false,
+          logPrint: (object) => log(object.toString()),
         ),
       AuthInterceptor(),
     ]);
@@ -50,12 +53,12 @@ class ApiService {
         options: options,
         queryParameters: queryParameters,
       );
-    } on DioException catch(e) {
-      return Response(requestOptions: RequestOptions(),data: {
-        "message": "Error $e"
-      });
-    }
-    catch (e) {
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(),
+        data: {"message": "Error $e"},
+      );
+    } catch (e) {
       rethrow; // Re-throw exception for better debugging
     }
   }
@@ -80,14 +83,14 @@ class ApiService {
   }
 
   /// Perform a PUT request
-  Future<Response> put(
+  Future<Response> patch(
     String url, {
     Map<String, dynamic>? queryParameters,
     Options? options,
     Map<String, dynamic>? data,
   }) async {
     try {
-      return await _dio.put(
+      return await _dio.patch(
         url,
         options: options,
         data: data,
@@ -122,7 +125,10 @@ class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.headers.addAll({
-      "Authorization": "Bearer ${UserSingleton().user?.token}"
+      "Authorization":
+          (UserSingleton().user?.token.isNotEmpty ?? false)
+              ? "Bearer ${UserSingleton().user?.token}"
+              : "",
     });
     super.onRequest(options, handler);
   }
@@ -131,15 +137,13 @@ class AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 401) {
       UserSingleton().clearUser();
-      ToastService().showToast(
-          "User Not Authorized Logging Out", isError: true);
+      toast("User Not Authorized Logging Out", isError: true);
       try {
-        Navigator
-            .of(Routes().navigatorKey.currentContext!)
-            .pushNamedAndRemoveUntil(RoutesKey.home, (route) => false);
+        Navigator.of(
+          Routes().navigatorKey.currentContext!,
+        ).pushNamedAndRemoveUntil(RoutesKey.home, (route) => false);
       } catch (e) {
-        ToastService().showToast(
-            "Please Login to Continue", isInformation: true);
+        toast("Please Login to Continue", isInformation: true);
       }
     }
     super.onError(err, handler);

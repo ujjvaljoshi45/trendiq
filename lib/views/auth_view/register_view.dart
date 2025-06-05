@@ -16,7 +16,7 @@ import 'package:trendiq/views/auth_view/bloc/auth_event.dart';
 import 'package:trendiq/views/auth_view/bloc/auth_state.dart';
 
 class RegisterView extends StatefulWidget {
-  const RegisterView({Key? key}) : super(key: key);
+  const RegisterView({super.key});
 
   @override
   State<RegisterView> createState() => _RegisterViewState();
@@ -367,7 +367,7 @@ class _RegisterViewState extends State<RegisterView> {
                 Navigator.pop(context);
               }
               if (state is AuthErrorState) {
-                ToastService().showToast(state.message,isError: true);
+                toast(state.message,isError: true);
               }
             },
           ),

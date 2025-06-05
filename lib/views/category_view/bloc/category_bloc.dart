@@ -35,7 +35,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         productCategoryModelWomen = result.data ?? ProductCategoryModel.dummy();
       }
       if (result.isError) {
-        ToastService().showToast(result.message, isError: true);
+        toast(result.message, isError: true);
       }
       emit(CategoryLoaded());
     } catch (e) {

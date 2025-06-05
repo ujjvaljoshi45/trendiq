@@ -29,6 +29,8 @@ class _ProfileViewState extends State<ProfileView> {
     authBloc = BlocProvider.of<AuthBloc>(context);
     if (authBloc.state is! AuthLoadedState && UserSingleton().user != null) {
       authBloc.add(AuthLoadedEvent());
+    } else if (authBloc.state is AuthLoadedState && UserSingleton().user == null) {
+      authBloc.add(AuthInitialEvent());
     }
     super.initState();
   }
@@ -410,6 +412,7 @@ class _ProfileViewState extends State<ProfileView> {
                   "Sign In",
                   style: commonTextStyle(
                     fontSize: 16,
+                    color: appColors.white,
                     fontWeight: FontWeight.bold,
                     fontFamily: Fonts.fontSemiBold,
                   ),

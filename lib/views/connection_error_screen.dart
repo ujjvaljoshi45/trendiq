@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:trendiq/common/common_widgets_methods.dart';
 import 'package:trendiq/constants/fonts.dart';
+import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/services/connectivity_service.dart';
 
 class ConnectionErrorScreen extends StatefulWidget {
@@ -108,6 +109,7 @@ class _ConnectionErrorScreenState extends State<ConnectionErrorScreen> {
                             'Retry',
                             style: commonTextStyle(
                               fontSize: 16,
+                              color: appColors.white,
                               fontFamily: Fonts.fontBold,
                             ),
                           ),

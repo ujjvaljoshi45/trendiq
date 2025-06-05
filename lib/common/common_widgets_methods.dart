@@ -49,9 +49,9 @@ Widget commonPriceTag({
   );
 }
 
-Widget loadingIndicator() {
+Widget loadingIndicator({Color? color}) {
   return CircularProgressIndicator.adaptive(
-    backgroundColor: appColors.white,
+    backgroundColor: color ?? appColors.white,
     valueColor: AlwaysStoppedAnimation<Color>(appColors.onPrimary),
   );
 }
@@ -81,10 +81,9 @@ Widget bottomBarTab({
 Widget shopByCategoryButton() {
   return InkWell(
     onTap:
-        () => ToastService().showToast(
+        () => toast(
           "Coming Soon",
           isInformation: true,
-          seconds: 200,
         ),
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),

@@ -6,7 +6,7 @@ void launchUrl(String url) async {
   try {
     await launchUrlString(url, mode: LaunchMode.externalApplication);
   } catch (e) {
-    ToastService().showToast("Unable to launch URL", isError: true);
+    toast("Unable to launch URL", isError: true);
   }
 }
 

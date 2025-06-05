@@ -8,4 +8,5 @@ abstract class RoutesKey {
   static const String support = 'support';
   static const String address = 'address';
   static const String productsList = 'productsList';
+  static const String cart = 'cart';
 }

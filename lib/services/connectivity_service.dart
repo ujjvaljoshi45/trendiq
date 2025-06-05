@@ -56,7 +56,7 @@ class ConnectivityService {
         return true;
       }
     } catch (e) {
-      ToastService().showToast("No Internet Connection");
+      toast("No Internet Connection");
     }
     return false;
   }

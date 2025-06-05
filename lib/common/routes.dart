@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trendiq/views/auth_view/login_view.dart';
 import 'package:trendiq/views/auth_view/register_view.dart';
+import 'package:trendiq/views/cart/cart_view.dart';
 import 'package:trendiq/views/connection_error_screen.dart';
 import 'package:trendiq/views/main_view.dart';
 import 'package:trendiq/views/profile/address/address_view.dart';
@@ -33,6 +34,7 @@ class Routes {
     RoutesKey.support: (_) => SupportView(),
     RoutesKey.address: (_) => AddressView(),
     RoutesKey.productsList: (_) => ProductsListView(),
+    RoutesKey.cart: (_) => CartView(),
   };
 }
 

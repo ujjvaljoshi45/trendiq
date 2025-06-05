@@ -197,7 +197,7 @@ class _LoginViewState extends State<LoginView> {
                               children: [
                                 InkWell(
                                   onTap: () {
-                                    ToastService().showToast(
+                                    toast(
                                       "Our Backend Developers are working on this feature.",
                                     );
                                   },
@@ -285,7 +285,7 @@ class _LoginViewState extends State<LoginView> {
             },
             listener: (context, state) {
               if (state is AuthErrorState) {
-                ToastService().showToast(state.message, isError: true);
+                toast(state.message, isError: true);
               }
               if (state is AuthLoadedState) {
                 Navigator.pop(context);

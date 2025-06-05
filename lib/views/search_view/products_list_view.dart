@@ -9,7 +9,7 @@ import 'package:trendiq/services/extensions.dart';
 import 'package:trendiq/services/toast_service.dart';
 import 'package:trendiq/views/search_view/bloc/search_bloc.dart';
 import 'package:trendiq/views/search_view/filter_sheet.dart';
-import 'package:trendiq/views/search_view/product_page.dart';
+import 'package:trendiq/views/product_view/product_view.dart';
 import 'package:trendiq/views/trending_products/bloc/trending_products_bloc.dart';
 
 class ProductsListView extends StatefulWidget {
@@ -305,7 +305,7 @@ class _ProductsListViewState extends State<ProductsListView> {
               },
               listener: (context, state) {
                 if (state is SearchErrorState) {
-                  ToastService().showToast(state.message, isError: true);
+                  toast(state.message, isError: true);
                 }
               },
             ),

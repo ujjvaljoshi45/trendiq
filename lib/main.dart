@@ -16,6 +16,7 @@ import 'package:trendiq/services/log_service.dart';
 import 'package:trendiq/services/theme/theme_bloc.dart';
 import 'package:trendiq/services/theme/theme_state.dart';
 import 'package:trendiq/views/auth_view/bloc/auth_bloc.dart';
+import 'package:trendiq/views/cart/bloc/cart_bloc.dart';
 import 'package:trendiq/views/category_view/bloc/category_bloc.dart';
 import 'package:trendiq/views/home/bloc/home_bloc.dart';
 import 'package:trendiq/views/search_view/bloc/search_bloc.dart';
@@ -38,7 +39,7 @@ void main() async {
             BlocProvider(create: (_) => TrendingProductsBloc()),
             BlocProvider(create: (_) => CategoryBloc()),
             BlocProvider(create: (_) => SearchBloc()),
-
+            BlocProvider(create: (_) => CartBloc()),
           ],
           child: MyApp(),
         ),
@@ -78,6 +79,7 @@ class MyApp extends StatelessWidget {
           child: GestureDetector(
             onTap: FocusScope.of(context).unfocus,
             child: MaterialApp(
+              debugShowCheckedModeBanner: false,
               navigatorKey: Routes().navigatorKey,
               onGenerateRoute: Routes().onGenerateRoute,
               theme: lightTheme,

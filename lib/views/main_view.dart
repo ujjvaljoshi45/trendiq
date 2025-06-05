@@ -7,7 +7,6 @@ import 'package:trendiq/common/common_widgets_methods.dart';
 import 'package:trendiq/common/theme.dart';
 import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/constants/route_key.dart';
-import 'package:trendiq/services/log_service.dart';
 import 'package:trendiq/views/home/home_view.dart';
 import 'package:trendiq/views/profile/profile_view.dart';
 import 'package:trendiq/views/category_view/category_view.dart';
@@ -41,17 +40,18 @@ class _MainViewState extends State<MainView> with TickerProviderStateMixin {
       appBar: CommonAppBar(
         title: "TrendiQ",
         actions: [
-          IconButton(onPressed: () {
-            Navigator.pushNamed(context, RoutesKey.productsList);
-          }, icon: Icon(Icons.search,color: MyColors.primaryColor,)),
           IconButton(
             onPressed: () {
-              final user = UserSingleton().user;
-              if (UserSingleton().user == null) {
-                Navigator.pushNamed(context, RoutesKey.login);
-              } else {
-                LogService().logMessage((user?.toJson() ?? " ").toString());
-              }
+              Navigator.pushNamed(context, RoutesKey.productsList);
+            },
+            icon: Icon(Icons.search, color: MyColors.primaryColor),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                UserSingleton().user == null ? RoutesKey.login : RoutesKey.cart,
+              );
             },
             icon: Icon(
               Icons.shopping_bag_outlined,
@@ -82,7 +82,7 @@ class _MainViewState extends State<MainView> with TickerProviderStateMixin {
       ),
 
       bottomNavigationBar: SizedBox(
-        height: kBottomNavigationBarHeight,
+        height: 56,
         child: BottomAppBar(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

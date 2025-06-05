@@ -58,7 +58,7 @@ class _AddressViewState extends State<AddressView> {
   _handelAddressFormEntry() {
     FocusScope.of(context).unfocus();
     if (formKey.currentState?.validate() ?? false) {
-      ToastService().showToast("New Address is Added");
+      toast("New Address is Added");
       etName.clear();
       etPinCode.clear();
       etAddress.clear();

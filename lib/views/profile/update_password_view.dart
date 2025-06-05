@@ -141,9 +141,9 @@ class _UpdatePasswordViewState extends State<UpdatePasswordView> {
         listener: (context, state) {
           if (state is AuthUpdatePasswordDone) {
             if (state.errorMsg != null) {
-              ToastService().showToast(state.errorMsg!);
+              toast(state.errorMsg!);
             } else {
-              ToastService().showToast("Password updated successfully");
+              toast("Password updated successfully");
 
               Navigator.pop(context);
             }

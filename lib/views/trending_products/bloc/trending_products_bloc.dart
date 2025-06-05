@@ -41,7 +41,7 @@ class TrendingProductsBloc
       trendingProductsModelWomen = result.data ?? TrendingProductsModel.dummy();
     }
     if (result.isError) {
-      ToastService().showToast(result.message, isError: true);
+      toast(result.message, isError: true);
       emit(TrendingProductsError(result.message));
       return;
     }

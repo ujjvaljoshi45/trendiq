@@ -4,6 +4,7 @@ import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/models/trending_products_model.dart';
 import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/services/extensions.dart';
+import 'package:trendiq/views/product_view/product_view.dart';
 
 class TrendingProductsList extends StatelessWidget {
   const TrendingProductsList({super.key, required this.trendingProductsModel});
@@ -33,8 +34,10 @@ class TrendingProductsList extends StatelessWidget {
               mainAxisSpacing: 8.0,
             ),
             itemCount: product.length,
-            itemBuilder: (context, index) {
-              return commonProductCard(product: product[index].toProduct());
+            itemBuilder: (_, index) {
+              return commonProductCard(product: product[index].toProduct(),onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ProductPage(productId: product[index].id),));
+              },);
             },
           ),
         ],

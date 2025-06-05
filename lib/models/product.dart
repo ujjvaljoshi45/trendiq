@@ -72,7 +72,7 @@ class Product {
       (json["availableColors"] ?? []).map((e) => AvailableColor.fromJson(e)),
     ),
     productImages: List<ProductImage>.from(
-      (json["productImage"] ?? []).map((e) => ProductImage.fromJson(e)),
+      (json["product_images"] ?? []).map((e) => ProductImage.fromJson(e)),
     ),
   );
 

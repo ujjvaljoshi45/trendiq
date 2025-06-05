@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:trendiq/common/common_carousel_indicator.dart';
 import 'package:trendiq/models/trending_products_model.dart';
 import 'package:trendiq/services/extensions.dart';
-import 'package:trendiq/services/toast_service.dart';
+import 'package:trendiq/views/product_view/product_view.dart';
 
 class TrendingProductsCarousel extends StatefulWidget {
   const TrendingProductsCarousel({
@@ -32,7 +32,12 @@ class _TrendingProductsCarouselState extends State<TrendingProductsCarousel> {
           items: List.generate(
             banners.length,
             (index) => InkWell(
-              onTap: () => ToastService().showToast("Tapped", seconds: 200),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) =>
+                    ProductPage(
+                        productId: widget.trendingProductsModel.data[index]
+                            .id),));
+              },
               child: CachedNetworkImage(
                 imageUrl: banners[index].mobileImage,
                 width: double.infinity,

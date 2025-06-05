@@ -9,43 +9,77 @@ import 'package:trendiq/services/log_service.dart';
 
 mixin ProductsApi on Api {
   // Get all trending products
-  Future<ApiResponse<TrendingProductsModel?>> getUserProductTrending(Map<String,String> jsonData) async {
+  Future<ApiResponse<TrendingProductsModel?>> getUserProductTrending(
+    Map<String, String> jsonData,
+  ) async {
     try {
-      final response = await api.get(ApiConstants.userProductTrending,queryParameters: jsonData);
-      return ApiResponse.fromJson(response.data, TrendingProductsModel.fromJson(response.data));
+      final response = await api.get(
+        ApiConstants.userProductTrending,
+        queryParameters: jsonData,
+      );
+      return ApiResponse.fromJson(
+        response.data,
+        TrendingProductsModel.fromJson(response.data),
+      );
     } on DioException catch (e) {
       return ApiResponse.fromDioException(e);
-    } catch (e,s) {
+    } catch (e, s) {
       LogService().logError("Trending", e, s);
       return ApiResponse.unknown();
     }
   }
 
   // Get all products
-  Future<ApiResponse<List<Product>?>> getAllProducts(Map<String,String> jsonData) async {
+  Future<ApiResponse<List<Product>?>> getAllProducts(
+    Map<String, String> jsonData,
+  ) async {
     try {
-      final response = await api.get(ApiConstants.userProduct,queryParameters: jsonData);
-      final List<Product> product = response.data[Keys.data] == null ? <Product>[] : ((response.data[Keys.data] as List).map((e)=>Product.fromJson(e)).toList().cast<Product>());
+      final response = await api.get(
+        ApiConstants.userProduct,
+        queryParameters: jsonData,
+      );
+      final List<Product> product =
+          response.data[Keys.data] == null
+              ? <Product>[]
+              : ((response.data[Keys.data] as List)
+                  .map((e) => Product.fromJson(e))
+                  .toList()
+                  .cast<Product>());
       return ApiResponse.fromJson(response.data, product);
-    } on DioException catch(e) {
+    } on DioException catch (e) {
       return ApiResponse.fromDioException(e);
-    } catch(e,s) {
+    } catch (e, s) {
       LogService().logError("model", e, s);
       return ApiResponse.unknown();
     }
   }
 
   Future<ApiResponse<Product?>> getSingleProduct(
-      Map<String, String> jsonData) async {
+    Map<String, String> jsonData,
+  ) async {
     try {
       final response = await api.get(
-          "${ApiConstants.userProduct}/${jsonData[Keys.name]}",);
+        "${ApiConstants.userProduct}/${jsonData[Keys.name]}",
+      );
       return ApiResponse.fromJson(
-          response.data, Product.fromJson(response.data[Keys.data]));
+        response.data,
+        Product.fromJson(response.data[Keys.data]),
+      );
     } on DioException catch (e) {
       return ApiResponse.fromDioException(e);
     } catch (e) {
       return ApiResponse.unknown();
+    }
+  }
+
+  Future<ApiResponse> addToCart(Map<String, dynamic> jsonData) async {
+    try {
+      final response = await api.post(ApiConstants.userCart, data: jsonData);
+      return ApiResponse.fromJson(response.data, null);
+    } on DioException catch (error) {
+      return ApiResponse.fromDioException(error);
+    } catch (error) {
+      return ApiResponse.unknown()..data = error;
     }
   }
 }

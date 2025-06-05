@@ -70,7 +70,7 @@ class _SupportViewState extends State<SupportView> {
                       if (formKey.currentState?.validate() ?? false) {
                         etSubject.clear();
                         etMessage.clear();
-                        ToastService().showToast("Ticket Raised Successfully.");
+                        toast("Ticket Raised Successfully.");
                       }
                     },
                     style: ElevatedButton.styleFrom(
