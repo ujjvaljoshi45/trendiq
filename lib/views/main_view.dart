@@ -7,12 +7,14 @@ import 'package:trendiq/common/common_widgets_methods.dart';
 import 'package:trendiq/common/theme.dart';
 import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/constants/route_key.dart';
+import 'package:trendiq/services/storage_service.dart';
+import 'package:trendiq/views/cart/bloc/cart_bloc.dart';
 import 'package:trendiq/views/home/home_view.dart';
 import 'package:trendiq/views/profile/profile_view.dart';
 import 'package:trendiq/views/category_view/category_view.dart';
 import 'package:trendiq/views/wishlist/wishlist_view.dart';
 
-import '../constants/user_singleton.dart';
+import '../services/messaging_service.dart';
 import 'home/bloc/home_bloc.dart';
 
 class MainView extends StatefulWidget {
@@ -23,14 +25,21 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> with TickerProviderStateMixin {
-  final PageController pageController = PageController();
+  late final PageController pageController;
   ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
   final List<String> genders = ["male", "female"];
   final ValueNotifier<int> selectedGenderIndex = ValueNotifier(0);
 
   @override
   void initState() {
-    context.read<HomeBloc>().add(LoadHome("male"));
+    FCMService().getPermissions();
+    pageController = BlocProvider.of<HomeBloc>(context).pageController;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<HomeBloc>(context).add(LoadHome("male"));
+      (StorageService().getToken().isNotEmpty)
+          ? BlocProvider.of<CartBloc>(context).add(CartLoadEvent())
+          : null;
+    });
     super.initState();
   }
 
@@ -46,18 +55,7 @@ class _MainViewState extends State<MainView> with TickerProviderStateMixin {
             },
             icon: Icon(Icons.search, color: MyColors.primaryColor),
           ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(
-                context,
-                UserSingleton().user == null ? RoutesKey.login : RoutesKey.cart,
-              );
-            },
-            icon: Icon(
-              Icons.shopping_bag_outlined,
-              color: MyColors.primaryColor,
-            ),
-          ),
+          buildCartIcon(),
         ],
       ),
       floatingActionButton: ValueListenableBuilder(
@@ -132,7 +130,7 @@ class _MainViewState extends State<MainView> with TickerProviderStateMixin {
     return ValueListenableBuilder2<int, bool>(
       first: selectedGenderIndex,
       second: isExpanded,
-      builder: (_, selected, expanded, __) {
+      builder: (_, selected, expanded, _) {
         return AnimatedCrossFade(
           crossFadeState:
               expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
@@ -229,6 +227,56 @@ class _MainViewState extends State<MainView> with TickerProviderStateMixin {
               }),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  Widget buildCartIcon() {
+    return BlocBuilder<CartBloc, CartState>(
+      builder: (context, state) {
+        final String? cartCount =
+            BlocProvider.of<CartBloc>(context).strCartCount;
+        return Stack(
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  StorageService().getToken().isEmpty
+                      ? RoutesKey.login
+                      : RoutesKey.cart,
+                );
+              },
+              icon: Icon(
+                Icons.shopping_cart_outlined,
+                color: MyColors.primaryColor,
+              ),
+            ),
+            if (cartCount != null && cartCount != '0')
+              Positioned(
+                right: 6,
+                top: 6,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white, width: 1),
+                  ),
+                  constraints: BoxConstraints(minWidth: 20, minHeight: 20),
+                  child: Text(
+                    cartCount.length > 2 ? '99+' : cartCount,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
         );
       },
     );

@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,6 +55,33 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: appColors.background,
+      appBar: AppBar(
+        backgroundColor: appColors.background,
+        automaticallyImplyLeading: false,
+        title: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(
+                appColors.primary.red,
+                appColors.primary.green,
+                appColors.primary.blue,
+                0.1,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                size: 18,
+                color: appColors.primary,
+              ),
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle(
@@ -99,7 +125,9 @@ class _LoginViewState extends State<LoginView> {
                                 "Stay ahead of the curve",
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: appColors.onBackground.withOpacity(0.7),
+                                  color: appColors.onBackground.withOpacity(
+                                    0.7,
+                                  ),
                                   fontFamily: Fonts.fontRegular,
                                 ),
                               ),
@@ -221,22 +249,31 @@ class _LoginViewState extends State<LoginView> {
                                   "Google",
                                   () {
                                     authBloc.add(
-                                      AuthSocialLoginEvent(Keys.google,false),
+                                      AuthSocialLoginEvent(Keys.google, false),
                                     );
                                   },
                                 ),
-                                20.sBw,
-                                buildSocialButton(Icons.facebook, "Facebook", () {
-                                  authBloc.add(AuthSocialLoginEvent(Keys.facebook,false));
-                                }),
-                                if (Platform.isIOS) ...[
-                                  20.sBw,
-                                  buildSocialButton(Icons.apple, "Apple", () {
-                                    authBloc.add(
-                                      AuthSocialLoginEvent(Keys.apple,false),
-                                    );
-                                  }),
-                                ],
+                                // 20.sBw,
+                                // buildSocialButton(
+                                //   Icons.facebook,
+                                //   "Facebook",
+                                //   () {
+                                //     authBloc.add(
+                                //       AuthSocialLoginEvent(
+                                //         Keys.facebook,
+                                //         false,
+                                //       ),
+                                //     );
+                                //   },
+                                // ),
+                                // if (Platform.isIOS) ...[
+                                //   20.sBw,
+                                //   buildSocialButton(Icons.apple, "Apple", () {
+                                //     authBloc.add(
+                                //       AuthSocialLoginEvent(Keys.apple, false),
+                                //     );
+                                //   }),
+                                // ],
                               ],
                             ),
                             20.sBh,

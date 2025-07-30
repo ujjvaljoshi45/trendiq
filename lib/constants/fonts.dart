@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:trendiq/services/app_colors.dart';
 
 abstract class Fonts {
   static String fontRegular = "Poppins-Regular";
@@ -17,7 +16,7 @@ TextStyle commonTextStyle({
   FontWeight? fontWeight,
 }) => TextStyle(
   fontSize: fontSize,
-  color: color ?? appColors.onSurface,
+  color: color,
   fontFamily: fontFamily ?? Fonts.fontRegular,
   height: height,fontWeight: fontWeight
 );

@@ -5,18 +5,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:trendiq/common/common_app_bar.dart';
 import 'package:trendiq/constants/fonts.dart';
-import 'package:trendiq/constants/user_singleton.dart';
+import 'package:trendiq/constants/route_key.dart';
 import 'package:trendiq/services/api/api_controller.dart';
 import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/services/extensions.dart';
+import 'package:trendiq/services/storage_service.dart';
 import 'package:trendiq/services/toast_service.dart';
 import 'package:trendiq/views/product_view/bloc/product_cubit.dart';
 import 'package:trendiq/views/product_view/bloc/product_state.dart';
 
 class ProductPage extends StatefulWidget {
   final String productId;
+  final bool isFromCart;
 
-  const ProductPage({super.key, required this.productId});
+  const ProductPage({
+    super.key,
+    required this.productId,
+    this.isFromCart = false,
+  });
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -25,11 +31,15 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   int productRating = 4; // Static rating as requested
 
-  Future<void> addToCart(String productId, String inventoryId) async {
-    if (UserSingleton().user == null) {
+  Future<void> addToCart({
+    required String productId,
+    required String inventoryId,
+  }) async {
+    if (StorageService().getToken().isEmpty) {
       toast("Login to access cart", isInformation: true);
       return;
     }
+
     final response = await apiController.addToCart({
       "productId": productId,
       "inventoryId": inventoryId,
@@ -42,9 +52,7 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-      ProductPageCubit()
-        ..fetchProduct(widget.productId),
+      create: (context) => ProductPageCubit()..fetchProduct(widget.productId),
       child: BlocConsumer<ProductPageCubit, ProductPageState>(
         listener: (context, state) {
           if (state is ProductPageError) {
@@ -67,53 +75,51 @@ class _ProductPageState extends State<ProductPage> {
                       height: 300,
                       child: CarouselSlider(
                         items:
-                        product.productImages.isNotEmpty
-                            ? product.productImages.map((imageData) {
-                          return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: CachedNetworkImage(
-                                imageUrl: imageData.imageUrl,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                placeholder:
-                                    (context, url) =>
-                                    Container(
-                                      color: appColors.lightGrey,
-                                      child: Center(
-                                        child:
-                                        CircularProgressIndicator(),
+                            product.productImages.isNotEmpty
+                                ? product.productImages.map((imageData) {
+                                  return Container(
+                                    margin: EdgeInsets.symmetric(horizontal: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: CachedNetworkImage(
+                                        imageUrl: imageData.imageUrl,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        placeholder:
+                                            (context, url) => Container(
+                                              color: appColors.lightGrey,
+                                              child: Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                            ),
+                                        errorWidget: (context, url, error) {
+                                          return Container(
+                                            color: appColors.lightGrey,
+                                            child: Icon(
+                                              Icons.error,
+                                              color: appColors.primary,
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
-                                errorWidget: (context, url, error) {
-                                  print("image_error:$error\nurl:$url");
-                                  return Container(
-                                    color: appColors.lightGrey,
-                                    child: Icon(
-                                      Icons.error,
-                                      color: appColors.primary,
-                                    ),
                                   );
-                                },
-                              ),
-                            ),
-                          );
-                        }).toList()
-                            : [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: appColors.lightGrey,
-                            ),
-                            child: Center(
-                              child: Text("No Image Found"),
-                            ),
-                          ),
-                        ],
+                                }).toList()
+                                : [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: appColors.lightGrey,
+                                    ),
+                                    child: Center(
+                                      child: Text("No Image Found"),
+                                    ),
+                                  ),
+                                ],
                         options: CarouselOptions(
                           height: 300,
                           aspectRatio: 1.2,
@@ -141,9 +147,7 @@ class _ProductPageState extends State<ProductPage> {
                         fontSize: 16,
                       ),
                     ),
-
                     12.sBh,
-
                     // Rating and reviews
                     Row(
                       children: [
@@ -158,9 +162,7 @@ class _ProductPageState extends State<ProductPage> {
                         ),
                       ],
                     ),
-
                     20.sBh,
-
                     // Color selection
                     Text(
                       "Color",
@@ -171,9 +173,7 @@ class _ProductPageState extends State<ProductPage> {
                     ),
                     8.sBh,
                     _buildColorSelector(cubit: productCubit),
-
                     20.sBh,
-
                     // Size selection
                     Text(
                       "Size",
@@ -185,45 +185,120 @@ class _ProductPageState extends State<ProductPage> {
                     8.sBh,
                     _buildSizeSelector(cubit: productCubit),
                     20.sBh,
-
                     // Stock status
-                    Text(
-                      "In Stock",
-                      style: commonTextStyle(
-                        color: Colors.green,
-                        fontFamily: Fonts.fontBold,
+                    if (!product.isStockAvailable(productCubit.selectedSize))
+                      Text(
+                        "In Stock",
+                        style: commonTextStyle(
+                          color: Colors.green,
+                          fontFamily: Fonts.fontBold,
+                        ),
                       ),
-                    ),
                     24.sBh,
                     // Add to cart button
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
+                      child:
+                          productCubit.product.id == "-1"
+                              ? SizedBox()
+                              : ElevatedButton(
+                                onPressed:
+                                    product.isStockAvailable(
+                                          productCubit.selectedSize,
+                                        )
+                                        ? null
+                                        : () async {
+                                          if (checkAuthStatus()) {
+                                            return;
+                                          }
+                                          if (product.isAddedToCart(
+                                            productCubit.selectedSize,
+                                          )) {
+                                            widget.isFromCart
+                                                ? Navigator.pop(context)
+                                                : Navigator.pushNamed(
+                                                  context,
+                                                  RoutesKey.cart,
+                                                );
+                                          } else {
+                                            if (productCubit.selectedSize < 0) {
+                                              toast(
+                                                "Please Select Size",
+                                                isError: true,
+                                              );
+                                              return;
+                                            }
+                                            await addToCart(
+                                              productId:
+                                                  productCubit.product.id,
+                                              inventoryId:
+                                                  productCubit
+                                                      .product
+                                                      .productInventory[productCubit
+                                                          .selectedSize]
+                                                      .id,
+                                            );
+                                            Navigator.pushReplacementNamed(
+                                              context,
+                                              RoutesKey.cart,
+                                            );
+                                          }
+                                        },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: appColors.primary,
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: Text(
+                                  getElevatedButtonText(productCubit),
+                                  style: commonTextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontFamily: Fonts.fontBold,
+                                  ),
+                                ),
+                              ),
+                    ),
+                    12.sBh,
+                    Center(
+                      child: TextButton.icon(
                         onPressed: () async {
-                          await addToCart(productCubit.product.id,
-                              productCubit.product.productInventory[productCubit
-                                  .selectedSize].id);
+                          if (checkAuthStatus()) {
+                            return;
+                          }
+                          final response =
+                              product.isInWishlist()
+                                  ? await apiController.removeFromWishList(
+                                    product.wishlist.firstOrNull?.id ?? "",
+                                  )
+                                  : await apiController.addToWishList({
+                                    "productId": product.id,
+                                  });
+                          if (response.isError) {
+                            toast(response.message, isError: true);
+                          } else {
+                            productCubit.fetchProduct(product.id);
+                          }
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: appColors.primary,
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                        label: Text(
+                          product.isInWishlist()
+                              ? "Remove From Wishlist"
+                              : "Add To Wishlist",
+                          style: commonTextStyle(
+                            fontFamily: Fonts.fontSemiBold,
                           ),
                         ),
-                        child: Text(
-                          "Add To Cart",
-                          style: commonTextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontFamily: Fonts.fontBold,
-                          ),
+                        icon: Icon(
+                          product.isInWishlist()
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: appColors.primary,
                         ),
                       ),
                     ),
-
                     24.sBh,
-
                     // Description
                     Text(
                       "Description",
@@ -273,45 +348,43 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  Widget _buildColorSelector({ required ProductPageCubit cubit}) {
+  Widget _buildColorSelector({required ProductPageCubit cubit}) {
     return Wrap(
       spacing: 8.0,
       crossAxisAlignment: WrapCrossAlignment.center,
       children:
-      cubit.product.availableColors
-          .asMap()
-          .entries
-          .map((entry) {
-        var imageData = entry.value;
-        bool isSelected = imageData.id == cubit.selectedColorId;
-        return GestureDetector(
-          onTap: () {
-            cubit.selectColor(imageData.id);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border:
-              isSelected
-                  ? Border.all(color: appColors.primary.withValues(alpha: 0.4), width: 2)
-                  : null,
-            ),
-            padding: EdgeInsets.all(isSelected ? 2 : 0),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundImage: CachedNetworkImageProvider(
-                imageData.imageUrl,
+          cubit.product.availableColors.asMap().entries.map((entry) {
+            var imageData = entry.value;
+            bool isSelected = imageData.id == cubit.selectedColorId;
+            return GestureDetector(
+              onTap: () {
+                cubit.selectColor(imageData.id);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border:
+                      isSelected
+                          ? Border.all(
+                            color: appColors.primary.withValues(alpha: 0.4),
+                            width: 2,
+                          )
+                          : null,
+                ),
+                padding: EdgeInsets.all(isSelected ? 2 : 0),
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundImage: CachedNetworkImageProvider(
+                    imageData.imageUrl,
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 
-  Widget _buildSizeSelector({
-    required ProductPageCubit cubit,
-  }) {
+  Widget _buildSizeSelector({required ProductPageCubit cubit}) {
     return Wrap(
       spacing: 8.0,
       children: [
@@ -326,15 +399,15 @@ class _ProductPageState extends State<ProductPage> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color:
-                  i == cubit.selectedSize
-                      ? appColors.primary
-                      : appColors.lightGrey,
+                      i == cubit.selectedSize
+                          ? appColors.primary
+                          : appColors.lightGrey,
                   width: i == cubit.selectedSize ? 2 : 1,
                 ),
                 color:
-                i == cubit.selectedSize
-                    ? appColors.primary.withOpacity(0.1)
-                    : null,
+                    i == cubit.selectedSize
+                        ? appColors.primary.withValues(alpha: 0.1)
+                        : null,
               ),
               child: Text(
                 cubit.product.productInventory[i].size.name,
@@ -374,44 +447,65 @@ class _ProductPageState extends State<ProductPage> {
 
     return Column(
       children:
-      reviews.map((review) {
-        return Container(
-          margin: EdgeInsets.only(bottom: 16),
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            border: Border.all(color: appColors.lightGrey),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          reviews.map((review) {
+            return Container(
+              margin: EdgeInsets.only(bottom: 16),
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: appColors.lightGrey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    review['name'] as String,
-                    style: commonTextStyle(fontFamily: Fonts.fontBold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        review['name'] as String,
+                        style: commonTextStyle(fontFamily: Fonts.fontBold),
+                      ),
+                      Text(
+                        review['date'] as String,
+                        style: commonTextStyle(
+                          fontSize: 12,
+                          color: appColors.lightGrey,
+                        ),
+                      ),
+                    ],
                   ),
+                  4.sBh,
+                  _buildStarRating(review['rating'] as int, size: 16),
+                  6.sBh,
                   Text(
-                    review['date'] as String,
-                    style: commonTextStyle(
-                      fontSize: 12,
-                      color: appColors.lightGrey,
-                    ),
+                    review['comment'] as String,
+                    style: commonTextStyle(fontSize: 14),
                   ),
                 ],
               ),
-              4.sBh,
-              _buildStarRating(review['rating'] as int, size: 16),
-              6.sBh,
-              Text(
-                review['comment'] as String,
-                style: commonTextStyle(fontSize: 14),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
+  }
+
+  String getElevatedButtonText(ProductPageCubit cubit) {
+    final product = cubit.product;
+    final inventory = cubit.product.productInventory[cubit.selectedSize];
+
+    if (inventory.stock < inventory.minimumStock) {
+      return "Out Of Stock";
+    }
+    if (product.isAddedToCart(cubit.selectedSize)) {
+      return "Go To Cart";
+    }
+    return "Add To Cart";
+  }
+
+  bool checkAuthStatus() {
+    if (StorageService().getToken().isEmpty) {
+      Navigator.pushNamed(context, RoutesKey.login);
+      return true;
+    }
+    return false;
   }
 }

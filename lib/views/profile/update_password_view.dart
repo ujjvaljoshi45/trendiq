@@ -45,7 +45,7 @@ class _UpdatePasswordViewState extends State<UpdatePasswordView> {
     final appColors = AppColors();
 
     return Scaffold(
-      appBar: CommonAppBar(title: "Update Password"),
+      appBar: CommonAppBar(title: "Update Password",showBackButton: true,),
       body: BlocConsumer<AuthBloc, AuthState>(
         builder: (context, state) {
           return Skeletonizer(

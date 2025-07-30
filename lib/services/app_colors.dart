@@ -78,6 +78,18 @@ Color get cardBg => _isDark ? _DarkColors.tertiaryContainer : _LightColors.backg
   Color get lightGrey => _isDark ? _DarkColors.lightGrey : _LightColors.lightGrey;
   Color get mediumGrey => _isDark ? _DarkColors.mediumGrey : _LightColors.mediumGrey;
   Color get darkGrey => _isDark ? _DarkColors.darkGrey : _LightColors.darkGrey;
+
+  Color get borderColor => _isDark ? _DarkColors.borderColor : _LightColors.borderColor;
+
+  Color get errorColor => Color(0xFFE53E3E);
+  Color get surfaceContainerHighest => _isDark ? _DarkColors.surfaceContainerHighest : _LightColors.surfaceContainerHighest;
+
+  Color get textPrimary => appColors.isDark ? _DarkColors.textPrimary : _LightColors.textPrimary;
+  Color get textSecondary => appColors.isDark ? _DarkColors.textSecondary : _LightColors.textSecondary;
+  Color get divider => appColors.isDark ? _DarkColors.divider : _LightColors.divider;
+
+
+
 }
 
 // Light mode colors
@@ -114,6 +126,16 @@ abstract class _LightColors {
   static const Color lightGrey = Color(0xFFE5E5EA);
   static const Color mediumGrey = Color(0xFFC7C7CC);
   static const Color darkGrey = Color(0xFF8E8E93);
+
+  static const Color borderColor = Color(0xFFE0E0E0);
+
+  static const Color surfaceContainerHighest = Color(0xFFF3F4F6);
+
+  static const Color textPrimary = Color(0xFF212121);       // Dark grey
+  static const Color textSecondary = Color(0xFF757575);     // Medium grey
+  static const Color divider = Color(0xFFE0E0E0);           // Light grey
+
+
 }
 
 // Dark mode colors
@@ -149,4 +171,11 @@ abstract class _DarkColors {
   static const Color lightGrey = Color(0xFF48484A);
   static const Color mediumGrey = Color(0xFF636366);
   static const Color darkGrey = Color(0xFF8E8E93);
+
+  static const Color borderColor = Color(0xFF404040);
+  static const Color surfaceContainerHighest = Color(0xFF2D2D2D);
+
+  static const Color textPrimary = Color(0xFFE0E0E0);   // Light grey
+  static const Color textSecondary = Color(0xFFBDBDBD); // Medium light grey
+  static const Color divider = Color(0xFF424242);       // Dark grey
 }

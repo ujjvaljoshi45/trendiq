@@ -1,6 +1,6 @@
 abstract class ApiConstants {
   // Base Url
-  static const String baseUrl = "https://trendiq-backend.onrender.com";
+  static const String baseUrl = "https://trendiq-be.vercel.app";
 
   //region User Auth
   static const String userSignIn = "/api/v1/user/signin";
@@ -12,11 +12,14 @@ abstract class ApiConstants {
 
   //region User Products
   static const String userProduct = "/api/v1/user/product";
-  static const String userProductTrending = "/api/v1/user/product/trending/home";
+  static const String userProductTrending =
+      "/api/v1/user/product/trending/home";
+
   //endregion
 
   //region User Cart
   static const String userCart = "/api/v1/user/cart";
+  static const String userCartCount = "/api/v1/user/cart/count";
 
   //endregion
 
@@ -35,4 +38,19 @@ abstract class ApiConstants {
 
   //endregion
   static const String userSupport = "/api/v1/user/support";
+
+  // Configs
+  static const String configs = "/api/v1/private-res/configs";
+
+  //region Stripe
+  static const String stripCreatePaymentIntent =
+      "/api/v1/user/stripe/create-payment-intent";
+  static const String stripCreatePaymentIntentMobile =
+      "/api/v1/user/stripe/create-payment-intent-mobile";
+  static const String stripCompletePayment =
+      "/api/v1/user/stripe/complete-payment";
+  static const String stripCompletePaymentMobile =
+      "/api/v1/user/stripe/complete-payment-mobile";
+  static const String stripMyOrders = "/api/v1/user/stripe/myorders";
+  static const String stripOrdersById = "/api/v1/user/stripe/order/";
 }

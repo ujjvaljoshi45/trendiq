@@ -6,6 +6,7 @@ import 'package:trendiq/models/trending_products_model.dart';
 import 'package:trendiq/services/api/api.dart';
 import 'package:trendiq/services/api/api_constants.dart';
 import 'package:trendiq/services/log_service.dart';
+import 'package:trendiq/services/storage_service.dart';
 
 mixin ProductsApi on Api {
   // Get all trending products
@@ -59,7 +60,7 @@ mixin ProductsApi on Api {
   ) async {
     try {
       final response = await api.get(
-        "${ApiConstants.userProduct}/${jsonData[Keys.name]}",
+        "${ApiConstants.userProduct}/${jsonData[Keys.name]}?email=${StorageService().getEmail() ?? ""}",
       );
       return ApiResponse.fromJson(
         response.data,

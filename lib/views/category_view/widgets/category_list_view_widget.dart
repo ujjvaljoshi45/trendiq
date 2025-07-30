@@ -3,7 +3,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:trendiq/common/common_widgets_methods.dart';
+import 'package:trendiq/constants/fonts.dart';
+import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/services/extensions.dart';
 import '../bloc/category_bloc.dart';
 import '../bloc/category_state.dart';
@@ -16,7 +17,6 @@ class CategoryListView extends StatefulWidget {
 }
 
 class _CategoryListViewState extends State<CategoryListView> {
-
   @override
   Widget build(BuildContext context) {
     final CategoryBloc categoryBloc = BlocProvider.of<CategoryBloc>(context);
@@ -31,7 +31,38 @@ class _CategoryListViewState extends State<CategoryListView> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                  child: shopByCategoryButton(),
+                  child: InkWell(
+                    onTap: () {},
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 12.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: appColors.primary.withValues(alpha: 0.8),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Explore Categories',
+                            style: commonTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: appColors.white,
+                            ),
+                          ),
+                          Spacer(),
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: appColors.white,
+                            size: 20.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 10.sBh,
                 CarouselSlider(
@@ -62,7 +93,6 @@ class _CategoryListViewState extends State<CategoryListView> {
                     enlargeFactor: 0.3,
                   ),
                 ),
-
               ],
             ),
           );

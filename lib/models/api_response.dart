@@ -11,18 +11,27 @@ class ApiResponse<T> {
   factory ApiResponse.fromJson(Map<String, dynamic> json, T? data) {
     return ApiResponse(
       isError: json[Keys.statusCode] < 200 && json[Keys.statusCode] > 299,
-      message: json[Keys.message],
+      message: _getErrorMessage(json[Keys.message]),
       data: data,
     );
   }
 
   factory ApiResponse.fromDioException(DioException error) {
-
     return ApiResponse(
       isError: true,
-      message: error.response?.data[Keys.message] ?? "Something went wrong!",
+      message: _getErrorMessage(error.response?.data[Keys.message]),
       data: error.response?.data[Keys.data],
     );
+  }
+
+  static String _getErrorMessage(dynamic response) {
+    if (response.runtimeType == String) {
+      return response;
+    } else if (response.runtimeType == List) {
+      return response.first;
+    } else {
+      return "Something went wrong!";
+    }
   }
 
   factory ApiResponse.unknown() {

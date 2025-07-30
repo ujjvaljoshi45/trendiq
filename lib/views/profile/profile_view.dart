@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:trendiq/constants/route_key.dart';
-import 'package:trendiq/constants/user_singleton.dart';
 import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/services/extensions.dart';
 import 'package:trendiq/services/theme/theme_bloc.dart';
 import 'package:trendiq/services/theme/theme_event.dart';
 import 'package:trendiq/services/theme/theme_state.dart';
-
+import 'package:trendiq/models/user_model.dart';
 import 'package:trendiq/services/tools.dart';
 import 'package:trendiq/views/auth_view/bloc/auth_bloc.dart';
 import 'package:trendiq/views/auth_view/bloc/auth_event.dart';
@@ -27,49 +26,33 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   void initState() {
     authBloc = BlocProvider.of<AuthBloc>(context);
-    if (authBloc.state is! AuthLoadedState && UserSingleton().user != null) {
-      authBloc.add(AuthLoadedEvent());
-    } else if (authBloc.state is AuthLoadedState && UserSingleton().user == null) {
-      authBloc.add(AuthInitialEvent());
-    }
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<ThemeBloc, ThemeState>(
-  builder: (context, state) {
-    return BlocConsumer<AuthBloc, AuthState>(
       builder: (context, state) {
-        if (state is AuthLoadingState || state is AuthLoadedState) {
-          if (state is AuthLoadedState && UserSingleton().user == null) {
-            return SizedBox();
-          }
-          return Skeletonizer(
-            enabled: state is AuthLoadingState,
-            child: _buildAuthenticatedProfile(context, state,authBloc),
-          );
-        } else {
-          return _buildUnauthenticatedProfile(context);
-        }
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            if (authState is AuthLoadingState) {
+              return Skeletonizer(
+                enabled: true,
+                child: _buildAuthenticatedProfile(context, null),
+              );
+            } else if (authState is AuthLoadedState) {
+              return _buildAuthenticatedProfile(context, authBloc.user);
+            } else {
+              return _buildUnauthenticatedProfile(context);
+            }
+          },
+        );
       },
-        listener: (context, state) {
-          if (state is AuthLoadedState && UserSingleton().user == null) {
-            authBloc.add(AuthInitialEvent());
-          } else if (state is! AuthLoadedState && UserSingleton().user != null) {
-            authBloc.add(AuthLoadedEvent());
-          }
-        },
     );
-  },
-);
   }
 
-  Widget _buildAuthenticatedProfile(BuildContext context, AuthState state, AuthBloc authBloc) {
-    // Extract user data if available
-    final userData = state is AuthLoadedState ? UserSingleton().user : null;
-    final userName = userData?.username ?? "";
-    final userEmail = userData?.email ?? "";
+  Widget _buildAuthenticatedProfile(BuildContext context, UserModel? user) {
+    final userName = user?.username ?? "";
+    final userEmail = user?.email ?? "";
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -97,7 +80,7 @@ class _ProfileViewState extends State<ProfileView> {
                 bottomRight: Radius.circular(30),
               ),
             ),
-            padding: const EdgeInsets.symmetric( vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,8 +106,7 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(50),
-                      child: _buildAvatarFallback(userName)
-                  ),
+                      child: _buildAvatarFallback(userName)),
                 ),
                 8.sBh,
                 // User Name
@@ -166,17 +148,21 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                 ),
                 _buildStatItem(context, "7", "Wishlist"),
-                if (userData?.createdAt != null) ...[Container(
-                  height: 40,
-                  width: 1.2,
-                  color: Color.fromRGBO(
-                    appColors.outline.red,
-                    appColors.outline.green,
-                    appColors.outline.blue,
-                    0.5,
+                if (user?.createdAt != null) ...[
+                  Container(
+                    height: 40,
+                    width: 1.2,
+                    color: Color.fromRGBO(
+                      appColors.outline.red,
+                      appColors.outline.green,
+                      appColors.outline.blue,
+                      0.5,
+                    ),
                   ),
-                ),
-                  _buildStatItem(context, getDateStr(userData!.createdAt), "Member Since",headerFontSize: 14),]
+                  _buildStatItem(
+                      context, getDateStr(user!.createdAt), "Member Since",
+                      headerFontSize: 14),
+                ]
               ],
             ),
           ),
@@ -187,55 +173,40 @@ class _ProfileViewState extends State<ProfileView> {
               children: [
                 // Account Settings Section
                 _buildSectionHeader("Account Settings"),
+                // _buildProfileMenuItem(
+                //   context,
+                //   icon: Icons.person_outline,
+                //   title: "Personal Information",
+                //   subtitle: "Update your personal details",
+                //   onTap: () {},
+                // ),
                 _buildProfileMenuItem(
                   context,
-                  icon: Icons.person_outline,
-                  title: "Personal Information",
-                  subtitle: "Update your personal details",
-                  onTap: () {
-
-                  },
+                  icon: Icons.shopping_cart_outlined,
+                  title: "Orders",
+                  subtitle: "View Orders",
+                  onTap: () =>
+                      Navigator.pushNamed(context, RoutesKey.order),
                 ),
                 _buildProfileMenuItem(
                   context,
                   icon: Icons.lock_outline,
                   title: "Update Password",
                   subtitle: "Change your password",
-                  onTap: () => Navigator.pushNamed(context, RoutesKey.updatePassword),
+                  onTap: () =>
+                      Navigator.pushNamed(context, RoutesKey.updatePassword),
                 ),
                 _buildProfileMenuItem(
                   context,
                   icon: Icons.location_on_outlined,
                   title: "My Addresses",
                   subtitle: "Manage your delivery addresses",
-                  badge: "3",
                   onTap: () {
                     Navigator.pushNamed(context, RoutesKey.address);
                   },
                 ),
-
                 // Preferences Section
                 _buildSectionHeader("Preferences"),
-                // _buildProfileMenuItem(
-                //   context,
-                //   icon: Icons.favorite_border,
-                //   title: "Wishlist",
-                //   subtitle: "Products you've saved",
-                //   badge: "7",
-                //   onTap: () {
-                //     // Navigate to wishlist screen
-                //   },
-                // ),
-                // _buildProfileMenuItem(
-                //   context,
-                //   icon: Icons.notifications_outlined,
-                //   title: "Notifications",
-                //   subtitle: "Manage notification preferences",
-                //   toggle: true,
-                //   onTap: () {
-                //     // Toggle notifications
-                //   },
-                // ),
                 _buildProfileMenuItem(
                   context,
                   icon: Icons.dark_mode_outlined,
@@ -277,7 +248,6 @@ class _ProfileViewState extends State<ProfileView> {
                     launchUrl("https://trendiq-fe.vercel.app/profile?tab=terms");
                   },
                 ),
-
                 // Logout Button
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -293,7 +263,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                     child: TextButton.icon(
                       onPressed: () {
-                        authBloc.add(AuthLogoutEvent());
+                        BlocProvider.of<AuthBloc>(context).add(AuthLogoutEvent());
                       },
                       icon: Icon(
                         Icons.logout,
@@ -461,7 +431,11 @@ class _ProfileViewState extends State<ProfileView> {
   // Helper Widgets
   Widget _buildAvatarFallback(String userName) {
     final initials = userName.isNotEmpty
-        ? userName.split(' ').map((e) => e.isNotEmpty ? e[0] : '').join().toUpperCase()
+        ? userName
+        .split(' ')
+        .map((e) => e.isNotEmpty ? e[0] : '')
+        .join()
+        .toUpperCase()
         : 'U';
 
     return Container(
@@ -480,10 +454,11 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String value, String label,{double? headerFontSize}) {
+  Widget _buildStatItem(BuildContext context, String value, String label,
+      {double? headerFontSize}) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric( horizontal:5.0),
+        padding: const EdgeInsets.symmetric(horizontal: 5.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -520,7 +495,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       child: Row(
         children: [
           Text(

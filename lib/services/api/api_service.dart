@@ -2,13 +2,16 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trendiq/common/routes.dart';
 import 'package:trendiq/constants/route_key.dart';
-import 'package:trendiq/constants/user_singleton.dart';
 import 'package:trendiq/services/api/api_constants.dart';
 import 'package:trendiq/services/toast_service.dart';
+import 'package:trendiq/views/auth_view/bloc/auth_bloc.dart';
+import 'package:trendiq/views/auth_view/bloc/auth_event.dart';
+
+import '../storage_service.dart';
 
 class ApiService {
   ApiService._();
@@ -26,19 +29,7 @@ class ApiService {
         contentType: "application/json",
       ),
     );
-    _dio.interceptors.addAll([
-      if (kDebugMode)
-        LogInterceptor(
-          error: true,
-          responseBody: false,
-          request: false,
-          requestBody: false,
-          requestHeader: false,
-          responseHeader: false,
-          logPrint: (object) => log(object.toString()),
-        ),
-      AuthInterceptor(),
-    ]);
+    _dio.interceptors.addAll([AuthInterceptor()]);
   }
 
   /// Perform a GET request
@@ -125,10 +116,7 @@ class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.headers.addAll({
-      "Authorization":
-          (UserSingleton().user?.token.isNotEmpty ?? false)
-              ? "Bearer ${UserSingleton().user?.token}"
-              : "",
+      "Authorization": "Bearer ${StorageService().getToken()}",
     });
     super.onRequest(options, handler);
   }
@@ -136,7 +124,14 @@ class AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 401) {
-      UserSingleton().clearUser();
+      StorageService().clear();
+      try {
+        BlocProvider.of<AuthBloc>(
+          Routes().navigatorKey.currentContext!,
+        ).add(AuthLogoutEvent());
+      } catch (e) {
+        log("Error: $e");
+      }
       toast("User Not Authorized Logging Out", isError: true);
       try {
         Navigator.of(

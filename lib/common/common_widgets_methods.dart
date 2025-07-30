@@ -6,7 +6,6 @@ import 'package:trendiq/generated/assets.dart';
 import 'package:trendiq/models/product.dart';
 import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/services/extensions.dart';
-import 'package:trendiq/services/toast_service.dart';
 
 Widget commonPriceTag({
   int spacingW = 5,
@@ -19,12 +18,14 @@ Widget commonPriceTag({
   double strikePriceSize = 10,
 }) {
   return Row(
+    mainAxisSize: MainAxisSize.min,
     children: [
       Text(
         Keys.inr,
         style: commonTextStyle(
           fontFamily: fontStyle ?? Fonts.fontMedium,
           color: fontColor,
+          fontSize: fontSize
         ),
       ),
       spacingW.sBw,
@@ -33,6 +34,7 @@ Widget commonPriceTag({
         style: commonTextStyle(
           fontFamily: fontStyle ?? Fonts.fontMedium,
           color: fontColor,
+            fontSize: fontSize
         ),
       ),
       if (strikeOutPrice != null) ...[
@@ -78,41 +80,6 @@ Widget bottomBarTab({
   );
 }
 
-Widget shopByCategoryButton() {
-  return InkWell(
-    onTap:
-        () => toast(
-          "Coming Soon",
-          isInformation: true,
-        ),
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        color: appColors.primary.withValues(alpha: 0.8),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Explore Categories',
-            style: commonTextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: appColors.white,
-            ),
-          ),
-          Spacer(),
-          Icon(
-            Icons.arrow_forward_ios_rounded,
-            color: appColors.white,
-            size: 20.0,
-          ),
-        ],
-      ),
-    ),
-  );
-}
 
 Widget appLogoWidget() {
   return Center(
@@ -274,6 +241,58 @@ Widget orContinueWithDivider() => Row(
     Expanded(child: Divider(color: appColors.outline, thickness: 1)),
   ],
 );
+
+Widget commonWishlistProductCard({required String title, required String imageUrl,  void Function()? onTap}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: appColors.cardBg,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: appColors.tertiaryContainer),
+      boxShadow: [
+        BoxShadow(
+          color: appColors.black.withOpacity(0.05),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Material(
+      color: appColors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+              8.sBh,
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: commonTextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 Widget commonProductCard({required Product product, void Function()? onTap}) {
   return Container(

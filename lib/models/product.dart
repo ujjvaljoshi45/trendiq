@@ -1,8 +1,8 @@
+import 'package:trendiq/models/wishlist.dart';
+
 part 'category.dart';
 
 part 'product_inventory.dart';
-
-part 'wishlist.dart';
 
 class Product {
   final String id;
@@ -23,6 +23,7 @@ class Product {
   final List<ProductInventory> productInventory;
   final List<Wishlist> wishlist;
   final List<AvailableColor> availableColors;
+  final List<Cart>? cart;
 
   Product({
     required this.id,
@@ -43,6 +44,7 @@ class Product {
     required this.wishlist,
     required this.productImages,
     required this.availableColors,
+    this.cart,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -74,28 +76,11 @@ class Product {
     productImages: List<ProductImage>.from(
       (json["product_images"] ?? []).map((e) => ProductImage.fromJson(e)),
     ),
+    cart:
+        json["cart"] == null
+            ? null
+            : List<Cart>.from(json["cart"].map((x) => Cart.fromJson(x))),
   );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "title": title,
-    "description": description,
-    "markupDescription": markupDescription,
-    "categoryId": categoryId,
-    "color": color,
-    "gender": gender,
-    "isTrending": isTrending,
-    "adminId": adminId,
-    "createdAt": createdAt.toIso8601String(),
-    "updatedAt": updatedAt.toIso8601String(),
-    "publicId": publicId,
-    "imageUrl": imageUrl,
-    "category": category.toJson(),
-    "product_inventory": List<dynamic>.from(
-      productInventory.map((x) => x.toJson()),
-    ),
-    "wishlist": List<dynamic>.from(wishlist.map((x) => x.toJson())),
-  };
 
   factory Product.dummy() => Product(
     id: '-1',
@@ -125,7 +110,22 @@ class Product {
     wishlist: [],
     productImages: [],
     availableColors: [],
+    cart: null,
   );
+
+  bool isAddedToCart(int index) =>
+      cart?.any(
+        (element) => element.productInventoryId == productInventory[index].id,
+      ) ??
+      false;
+
+  bool isStockAvailable(int index) =>
+      productInventory.isEmpty
+          ? false
+          : productInventory[index].stock <
+              productInventory[index].minimumStock;
+
+  bool isInWishlist() => wishlist.any((element) => element.productId == id);
 }
 
 class AvailableColor {
@@ -177,5 +177,45 @@ class ProductImage {
     "imageUrl": imageUrl,
     "publicId": publicId,
     "productId": productId,
+  };
+}
+
+class Cart {
+  final String id;
+  final String productId;
+  final String userId;
+  final int quantity;
+  final String productInventoryId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  Cart({
+    required this.id,
+    required this.productId,
+    required this.userId,
+    required this.quantity,
+    required this.productInventoryId,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Cart.fromJson(Map<String, dynamic> json) => Cart(
+    id: json["id"],
+    productId: json["productId"],
+    userId: json["userId"],
+    quantity: json["quantity"],
+    productInventoryId: json["product_inventoryId"],
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "productId": productId,
+    "userId": userId,
+    "quantity": quantity,
+    "product_inventoryId": productInventoryId,
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
   };
 }

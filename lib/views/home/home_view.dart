@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trendiq/services/extensions.dart';
-import 'package:trendiq/services/messaging_service.dart';
 import 'package:trendiq/views/category_view/bloc/category_bloc.dart';
 import 'package:trendiq/views/category_view/bloc/category_event.dart';
 import 'package:trendiq/views/category_view/widgets/category_list_view_widget.dart';
@@ -26,7 +25,6 @@ class _HomeViewState extends State<HomeView>
   @override
   void initState() {
     super.initState();
-    FCMService().getPermissions();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeBloc>().add(
         LoadHome(genders[widget.selectedGenderIndex.value]),
@@ -50,7 +48,9 @@ class _HomeViewState extends State<HomeView>
       },
       builder: (context, state) {
         if (state is HomeError) {
-          return Center(child: Text("Oops! Something went wrong."));
+          return Center(child: TextButton.icon(onPressed: () {
+            
+          },label: Text("Oops! Something went wrong."),icon: Icon(Icons.restart_alt_sharp),));
         }
         if (state is HomeLoaded) {
           return SingleChildScrollView(

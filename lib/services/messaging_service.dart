@@ -16,8 +16,8 @@ class FCMService {
     if (isDone) {
       return;
     }
-    await fcm.requestPermission();
     isDone = true;
+    await fcm.requestPermission();
   }
 
   Future<String?> generateNewToken() async {

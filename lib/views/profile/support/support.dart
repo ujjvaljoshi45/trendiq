@@ -22,13 +22,14 @@ class _SupportViewState extends State<SupportView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: appColors.background,
-      appBar: CommonAppBar(title: "", backgroundColor: appColors.background),
+      appBar: CommonAppBar(title: "We Are here to help", backgroundColor: appColors.background,showBackButton: true,),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Form(
           key: formKey,
           child: SingleChildScrollView(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -37,8 +38,6 @@ class _SupportViewState extends State<SupportView> {
                   style: headerTextStyle(),
                 ),
                 4.sBh,
-                Text("Get help and support", style: commonTextStyle()),
-                12.sBh,
                 Divider(color: appColors.secondary),
                 12.sBh,
                 buildInputLabel("Subject"),

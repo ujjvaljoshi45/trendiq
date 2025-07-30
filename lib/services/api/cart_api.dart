@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:trendiq/models/api_response.dart';
+import 'package:trendiq/models/cart.dart';
 import 'package:trendiq/services/api/api_constants.dart';
 
 import 'api.dart';
@@ -16,7 +17,7 @@ mixin CartApi on Api {
     }
   }
 
-  Future<ApiResponse> updateCart(Map<String, String> jsonData) async {
+  Future<ApiResponse> updateCart(Map<String, dynamic> jsonData) async {
     try {
       final response = await api.patch(ApiConstants.userCart, data: jsonData);
       return ApiResponse.fromJson(response.data, response.data);
@@ -38,14 +39,25 @@ mixin CartApi on Api {
     }
   }
 
-  Future<ApiResponse> getCart() async {
+  Future<ApiResponse<Cart?>> getCart() async {
     try {
       final response = await api.get(ApiConstants.userCart);
-      return ApiResponse.fromJson(response.data, response.data);
+      return ApiResponse.fromJson(response.data, Cart.fromJson(response.data));
     } on DioException catch (e) {
       return ApiResponse.fromDioException(e);
     } catch (e) {
-      return ApiResponse.unknown()..data = e;
+      return ApiResponse.unknown();
+    }
+  }
+
+  Future<ApiResponse<String?>> getCartCount() async {
+    try {
+      final response = await api.get(ApiConstants.userCartCount);
+      return ApiResponse.fromJson(response.data, response.data["count"]?.toString());
+    } on DioException catch (e) {
+      return ApiResponse.fromDioException(e);
+    } catch (e) {
+      return ApiResponse.unknown();
     }
   }
 }

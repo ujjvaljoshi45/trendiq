@@ -48,4 +48,7 @@ class Keys {
   static const String search = "search";
   static const String userEmail = "userEmail";
   static const String gender = "gender";
+  static const String pinCode= "pincode";
+  static const String address= "address";
+  static const String addressId = "addressId";
 }

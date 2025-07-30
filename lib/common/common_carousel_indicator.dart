@@ -13,7 +13,7 @@ class CommonCarouselIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: controller,
-      builder: (_,value,___) {
+      builder: (_,value,_) {
         return Row(mainAxisAlignment: MainAxisAlignment.center,
           children: [
             for (int i = 0; i < length; i++)

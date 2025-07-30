@@ -9,7 +9,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:toastification/toastification.dart';
 import 'package:trendiq/common/theme.dart';
 import 'package:trendiq/common/routes.dart';
-import 'package:trendiq/constants/user_singleton.dart';
 import 'package:trendiq/services/api/api_service.dart';
 import 'package:trendiq/services/connectivity_service.dart';
 import 'package:trendiq/services/log_service.dart';
@@ -19,9 +18,12 @@ import 'package:trendiq/views/auth_view/bloc/auth_bloc.dart';
 import 'package:trendiq/views/cart/bloc/cart_bloc.dart';
 import 'package:trendiq/views/category_view/bloc/category_bloc.dart';
 import 'package:trendiq/views/home/bloc/home_bloc.dart';
+import 'package:trendiq/views/profile/address/bloc/address_bloc.dart';
+import 'package:trendiq/views/profile/orders/bloc/order_bloc.dart';
 import 'package:trendiq/views/search_view/bloc/search_bloc.dart';
 import 'package:trendiq/views/trending_products/bloc/trending_products_bloc.dart';
-import 'package:trendiq/services/shared_pref_service.dart' as pref;
+import 'package:trendiq/services/storage_service.dart' as pref;
+import 'package:trendiq/views/wishlist/bloc/wishlist_bloc.dart';
 
 import 'firebase_options.dart';
 
@@ -40,6 +42,9 @@ void main() async {
             BlocProvider(create: (_) => CategoryBloc()),
             BlocProvider(create: (_) => SearchBloc()),
             BlocProvider(create: (_) => CartBloc()),
+            BlocProvider(create: (_) => AddressBloc()),
+            BlocProvider(create: (_) => WishlistBloc()),
+            BlocProvider(create: (_) => OrderBloc()),
           ],
           child: MyApp(),
         ),
@@ -52,11 +57,10 @@ void main() async {
 }
 
 Future<void> initServices() async {
-  await pref.Storage().init();
+  await pref.StorageService().init();
   ConnectivityService().init();
   ApiService().initDio();
   LogService().init();
-  UserSingleton().getUser();
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: HydratedStorageDirectory(
       (await getApplicationDocumentsDirectory()).path,

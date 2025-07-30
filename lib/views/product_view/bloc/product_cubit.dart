@@ -6,7 +6,7 @@ import 'package:trendiq/views/product_view/bloc/product_state.dart';
 
 class ProductPageCubit extends Cubit<ProductPageState> {
   Product product = Product.dummy();
-  int selectedSize = -1;
+  int selectedSize = 0;
   int productRating = 4; // Static rating as requested
   String selectedColorId = '';
   bool isInStock = true;
@@ -42,12 +42,16 @@ class ProductPageCubit extends Cubit<ProductPageState> {
   }
 
   void selectColor(String id) async {
+    if (selectedColorId == id) {
+      return;
+    }
     selectedColorId = id;
     fetchProduct(selectedColorId);
   }
+
   void dispose() {
     product = Product.dummy();
-    selectedSize = -1;
+    selectedSize = 0;
     productRating = 4;
   }
 }
