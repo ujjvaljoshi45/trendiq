@@ -8,6 +8,7 @@ class UserModel {
   DateTime createdAt;
   DateTime updatedAt;
   bool isVerified;
+  String? orderCount;
 
   UserModel({
     required this.id,
@@ -19,6 +20,7 @@ class UserModel {
     required this.createdAt,
     required this.updatedAt,
     required this.isVerified,
+    required this.orderCount,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -31,6 +33,7 @@ class UserModel {
     createdAt: DateTime.parse(json["createdAt"]),
     updatedAt: DateTime.parse(json["updatedAt"]),
     isVerified: json["isVerified"],
+    orderCount: json["orderCount"]?.toString(),
   );
 
   Map<String, dynamic> toJson() => {

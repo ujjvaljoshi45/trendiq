@@ -9,8 +9,15 @@ class ApiResponse<T> {
   ApiResponse({this.data, this.message = "", this.isError = false});
 
   factory ApiResponse.fromJson(Map<String, dynamic> json, T? data) {
+    bool isError;
+    //handel edge case where status is null
+    try {
+      isError = json[Keys.statusCode] < 200 && json[Keys.statusCode] > 299;
+    } catch(_) {
+      isError = true;
+    }
     return ApiResponse(
-      isError: json[Keys.statusCode] < 200 && json[Keys.statusCode] > 299,
+      isError: isError,
       message: _getErrorMessage(json[Keys.message]),
       data: data,
     );

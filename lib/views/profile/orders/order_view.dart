@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:trendiq/common/common_app_bar.dart';
 import 'package:trendiq/constants/fonts.dart';
+import 'package:trendiq/constants/keys.dart';
 import 'package:trendiq/models/order.dart';
 import 'package:trendiq/services/app_colors.dart';
+import 'package:trendiq/services/extensions.dart';
 import 'package:trendiq/views/profile/orders/bloc/order_bloc.dart';
 import 'package:trendiq/views/profile/orders/bloc/order_event.dart';
 import 'package:trendiq/views/profile/orders/bloc/order_state.dart';
@@ -25,7 +27,7 @@ class _OrderViewState extends State<OrderView> {
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
     WidgetsBinding.instance.addPostFrameCallback(
-          (_) => orderBloc.add(OrderLoadEvent()),
+      (_) => orderBloc.add(OrderLoadEvent()),
     );
     super.initState();
   }
@@ -36,16 +38,22 @@ class _OrderViewState extends State<OrderView> {
       appBar: CommonAppBar(title: "Orders", showBackButton: true),
       body: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
-
           if (state is OrderLoadedState || state is OrderLoadingState) {
             if (orderBloc.orders.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.shopping_bag_outlined, size: 64, color: Colors.grey),
-                    SizedBox(height: 16),
-                    Text('No orders yet', style: commonTextStyle(fontSize: 18, color: Colors.grey)),
+                    Icon(
+                      Icons.shopping_bag_outlined,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
+                    12.sBh,
+                    Text(
+                      'No orders yet',
+                      style: commonTextStyle(fontSize: 18, color: Colors.grey),
+                    ),
                   ],
                 ),
               );
@@ -81,7 +89,12 @@ class _OrderViewState extends State<OrderView> {
       child: InkWell(
         onTap: () {
           // TODO: Navigate to order details page
-          Navigator.push(context, MaterialPageRoute(builder: (context) => OrderDetailView(order: order)));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OrderDetailView(order: order),
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -95,10 +108,16 @@ class _OrderViewState extends State<OrderView> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.calendar_today, size: 16, color: appColors.textSecondary),
-                      SizedBox(width: 8),
+                      Icon(
+                        Icons.calendar_today,
+                        size: 14,
+                        color: appColors.textSecondary,
+                      ),
+                      6.sBw,
                       Text(
-                        DateFormat('MMM dd, yyyy').format(order.createdAt ?? DateTime.now()),
+                        DateFormat(
+                          'MMM dd, yyyy',
+                        ).format(order.createdAt ?? DateTime.now()),
                         style: commonTextStyle(
                           color: appColors.textPrimary,
                           fontSize: 14,
@@ -108,7 +127,7 @@ class _OrderViewState extends State<OrderView> {
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: appColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16),
@@ -117,29 +136,36 @@ class _OrderViewState extends State<OrderView> {
                       order.status ?? '-',
                       style: commonTextStyle(
                         color: appColors.primary,
-                        fontSize: 12,
+                        fontSize: 10,
                         fontFamily: Fonts.fontSemiBold,
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              8.sBh,
 
               // Address and item count
               Row(
                 children: [
-                  Icon(Icons.location_on_outlined, size: 16, color: appColors.textSecondary),
-                  SizedBox(width: 8),
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 12,
+                    color: appColors.textSecondary,
+                  ),
+                  6.sBw,
                   Expanded(
                     child: Text(
                       order.address?.name ?? "-",
-                      style: commonTextStyle(color: appColors.textSecondary, fontSize: 14),
+                      style: commonTextStyle(
+                        color: appColors.textSecondary,
+                        fontSize: 12,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(width: 8),
+                  6.sBw,
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
@@ -150,7 +176,7 @@ class _OrderViewState extends State<OrderView> {
                       '${order.products.length} items',
                       style: commonTextStyle(
                         color: appColors.textSecondary,
-                        fontSize: 12,
+                        fontSize: 10,
                         fontFamily: Fonts.fontMedium,
                       ),
                     ),
@@ -160,7 +186,7 @@ class _OrderViewState extends State<OrderView> {
 
               // Product thumbnails
               if (order.products.isNotEmpty) ...[
-                SizedBox(height: 16),
+                12.sBh,
                 SizedBox(
                   height: 50,
                   child: Row(
@@ -168,7 +194,10 @@ class _OrderViewState extends State<OrderView> {
                       Expanded(
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: order.products.length > 4 ? 4 : order.products.length,
+                          itemCount:
+                              order.products.length > 4
+                                  ? 4
+                                  : order.products.length,
                           itemBuilder: (context, index) {
                             return Container(
                               margin: EdgeInsets.only(right: 8),
@@ -179,16 +208,23 @@ class _OrderViewState extends State<OrderView> {
                                     height: 50,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: appColors.divider),
+                                      border: Border.all(
+                                        color: appColors.divider,
+                                      ),
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(7),
                                       child: Image.network(
                                         order.products[index].imageUrl ?? '',
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
+                                        errorBuilder: (
+                                          context,
+                                          error,
+                                          stackTrace,
+                                        ) {
                                           return Container(
-                                            color: appColors.primary.withOpacity(0.05),
+                                            color: appColors.primary
+                                                .withOpacity(0.05),
                                             child: Icon(
                                               Icons.image_outlined,
                                               size: 24,
@@ -204,7 +240,8 @@ class _OrderViewState extends State<OrderView> {
                                       width: 50,
                                       height: 50,
                                       decoration: BoxDecoration(
-                                        color: appColors.textPrimary.withOpacity(0.8),
+                                        color: appColors.textPrimary
+                                            .withOpacity(0.8),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Center(
@@ -229,13 +266,9 @@ class _OrderViewState extends State<OrderView> {
                 ),
               ],
 
-              SizedBox(height: 16),
-              Container(
-                height: 1,
-                color: appColors.divider,
-              ),
-              SizedBox(height: 12),
-
+              8.sBh,
+              Container(height: 1, color: appColors.divider),
+              6.sBh,
               // Total amount
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -245,14 +278,14 @@ class _OrderViewState extends State<OrderView> {
                     style: commonTextStyle(
                       fontFamily: Fonts.fontMedium,
                       color: appColors.textSecondary,
-                      fontSize: 14,
+                      fontSize: 10,
                     ),
                   ),
                   Text(
-                    '\$${order.finalAmount?.toStringAsFixed(2)}',
+                    '${Keys.inr}${order.finalAmount}',
                     style: commonTextStyle(
-                      fontFamily: Fonts.fontBold,
-                      fontSize: 18,
+                      fontFamily: Fonts.fontSemiBold,
+                      fontSize: 14,
                       color: appColors.primary,
                     ),
                   ),

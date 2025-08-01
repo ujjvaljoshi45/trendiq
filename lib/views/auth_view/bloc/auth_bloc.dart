@@ -21,6 +21,8 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
     on<AuthRegisterEvent>(_handelRegister);
     on<AuthUpdatePasswordEvent>(_handelUpdatePassword);
     on<AuthLogoutEvent>(_handelLogout);
+    on<AuthRefreshEvent>(_handelRefreshUser);
+
     on<AuthSocialLoginEvent>(_handelSocialLogin);
     on<AuthLoadedEvent>((event, emit) {
       if (_user == null) {
@@ -60,10 +62,7 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
   Map<String, dynamic>? toJson(AuthState state) {
     try {
       if (state is AuthLoadedState) {
-        return {
-          'type': 'AuthLoadedState',
-          'user': _user?.toJson(),
-        };
+        return {'type': 'AuthLoadedState', 'user': _user?.toJson()};
       } else if (state is AuthInitialState) {
         return {'type': 'AuthInitialState'};
       }
@@ -73,7 +72,10 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _handelLogin(AuthLoginEvent event, Emitter<AuthState> emit) async {
+  Future<void> _handelLogin(
+    AuthLoginEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoadingState());
     final response = await apiController.userLogin({
       Keys.email: event.email,
@@ -88,13 +90,16 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _handelRegister(AuthRegisterEvent event, Emitter<AuthState> emit) async {
+  Future<void> _handelRegister(
+    AuthRegisterEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoadingState());
     final response = await apiController.userRegister({
       Keys.email: event.email,
       Keys.password: event.password,
       Keys.username: event.username,
-      Keys.source: Keys.app
+      Keys.source: Keys.app,
     });
     if (response.data != null) {
       _user = response.data!;
@@ -105,9 +110,9 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
   }
 
   Future<void> _handelUpdatePassword(
-      AuthUpdatePasswordEvent event,
-      Emitter<AuthState> emit,
-      ) async {
+    AuthUpdatePasswordEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthUpdatePasswordLoading());
     final response = await apiController.updatePassword({
       Keys.password: event.password,
@@ -125,7 +130,24 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
     emit(AuthInitialState());
   }
 
-  Future<void> _handelSocialLogin(AuthSocialLoginEvent event, Emitter<AuthState> emit) async {
+  void _handelRefreshUser(
+    AuthRefreshEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoadedState());
+    final response = await apiController.getAppUser();
+    if (response.isError && response.data != null) {
+      emit(AuthErrorState(response.message));
+    } else {
+      _user = response.data;
+      emit(AuthLoadedState());
+    }
+  }
+
+  Future<void> _handelSocialLogin(
+    AuthSocialLoginEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoadingState());
     ApiResponse<UserModel?> response;
     if (event.authProviderId == Keys.google) {
@@ -136,7 +158,6 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
     if (response.isError || response.data == null) {
       emit(AuthErrorState(response.message));
     } else {
-
       _user = response.data!;
       emit(AuthLoadedState());
     }
@@ -145,37 +166,42 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
   Future<ApiResponse<UserModel?>> _handelGoogleLogin(bool isRegister) async {
     try {
       await GoogleSignIn.instance.initialize();
-      final gUser = (await GoogleSignIn.instance.authenticate(scopeHint: ['profile', 'email']));
+      final gUser = (await GoogleSignIn.instance.authenticate(
+        scopeHint: ['profile', 'email'],
+      ));
       final res = (gUser.authentication);
 
-      final user = (await _firebaseAuth.signInWithCredential(
-          GoogleAuthProvider.credential(
-              idToken: res.idToken
-          ))).user;
+      final user =
+          (await _firebaseAuth.signInWithCredential(
+            GoogleAuthProvider.credential(idToken: res.idToken),
+          )).user;
       if (user?.email == null) {
         return ApiResponse(
-            isError: true, message: "Unable to Sign in With Google"
+          isError: true,
+          message: "Unable to Sign in With Google",
         );
       }
-      final pass= user!.email == "ujjvaljoshi45@gmail.com" ? "Ujjval@123" : user.uid;
+      final pass =
+          user!.email == "ujjvaljoshi45@gmail.com" ? "Ujjval@123" : user.uid;
       if (isRegister) {
         return await apiController.userRegister({
           Keys.email: user.email!,
-          Keys.password:  pass,
+          Keys.password: pass,
           Keys.username: user.displayName ?? "",
-          Keys.source: Keys.google.toLowerCase()
+          Keys.source: Keys.google.toLowerCase(),
         });
       } else {
         return await apiController.userLogin({
           Keys.email: user.email!,
           Keys.password: pass,
-          Keys.source: Keys.google.toLowerCase()
+          Keys.source: Keys.google.toLowerCase(),
         });
       }
     } catch (error, stackTrace) {
       LogService().logError("auth error", error, stackTrace);
       return ApiResponse(
-          isError: true, message: "Unable to Sign in With Google"
+        isError: true,
+        message: "Unable to Sign in With Google",
       );
     }
   }

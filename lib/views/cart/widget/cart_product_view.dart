@@ -54,18 +54,20 @@ class CartProductCard extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).shadowColor.withValues(alpha: 0.08),
+                    color: Theme.of(
+                      context,
+                    ).shadowColor.withValues(alpha: 0.08),
                     blurRadius: 8,
                     offset: Offset(0, 2),
                   ),
                 ],
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildProductImage(context),
                   8.sBw,
-                  Expanded(child: _buildProductDetails(context)),
-                  _buildProductActions(context),
+                  Flexible(child: _buildProductDetails(context)),
                   8.sBw,
                 ],
               ),
@@ -78,9 +80,7 @@ class CartProductCard extends StatelessWidget {
 
   Widget _buildProductImage(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadiusGeometry.horizontal(
-        left: Radius.circular(12),
-      ),
+      borderRadius: BorderRadiusGeometry.horizontal(left: Radius.circular(12)),
       child: Container(
         width: 100,
         height: double.infinity,
@@ -90,194 +90,182 @@ class CartProductCard extends StatelessWidget {
         child: CachedNetworkImage(
           imageUrl: item.product?.imageUrl ?? "",
           fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: Icon(
-              Icons.image_outlined,
-              color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.3),
-            ),
-          ),
-          errorWidget: (context, url, error) => Container(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: Icon(
-              Icons.broken_image_outlined,
-              color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.3),
-            ),
-          ),
+          placeholder:
+              (context, url) => Container(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Icon(
+                  Icons.image_outlined,
+                  color: Theme.of(
+                    context,
+                  ).iconTheme.color?.withValues(alpha: 0.3),
+                ),
+              ),
+          errorWidget:
+              (context, url, error) => Container(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Icon(
+                  Icons.broken_image_outlined,
+                  color: Theme.of(
+                    context,
+                  ).iconTheme.color?.withValues(alpha: 0.3),
+                ),
+              ),
         ),
       ),
     );
   }
 
   Widget _buildProductDetails(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      spacing: 4,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.product?.title ?? "-",
-                    softWrap: true,
-                    style: commonTextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title and Delete Row
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  item.product?.title ?? "-",
+                  style: commonTextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
-                ],
-              ),
-            ),
-            10.sBw,
-            GestureDetector(
-              onTap: onDelete,
-              child: Container(
-                padding: EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Icon(
-                  Icons.delete_outlined,
-                  color: Colors.red,
-                  size: 16,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                "Size: ${item.productInventory?.size?.name ?? "-"}",
-                style: commonTextStyle(
-                  fontSize: 11,
-                  color: Theme.of(context).textTheme.bodySmall?.color,
+              GestureDetector(
+                onTap: onDelete,
+                child: Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(
+                    Icons.delete_outlined,
+                    color: Colors.red,
+                    size: 16,
+                  ),
                 ),
               ),
-            ),
-            12.sBw,
-            Flexible(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            ],
+          ),
+
+          8.sBh,
+
+          // Size and Color Tags
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: FittedBox(
-                  child: Text(
-                    "Color: ${item.product?.color ?? "-"}",
-                    maxLines: 1,
-                    style: commonTextStyle(
-                      fontSize: 11,
-                      color: Theme.of(context).textTheme.bodySmall?.color,
-                    ),
+                child: Text(
+                  "Size: ${item.productInventory?.size?.name ?? "-"}",
+                  style: commonTextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        Text(
-          item.product?.description ?? "",
-          style: commonTextStyle(
-            fontSize: 12,
-            color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+              6.sBw,
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  "Color: ${item.product?.color ?? "-"}",
+                  style: commonTextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
+                ),
+              ),
+            ],
           ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
+
+          Spacer(),
+
+          // Price and Quantity Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  "${Keys.inr} ${item.productInventory?.price}",
+                  style: commonTextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+              _buildActionButton(context),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildProductActions(BuildContext context) {
+  Widget _buildActionButton(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
-              ),
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+            child: IconButton(
+              onPressed: onDecrement,
+              icon: Icon(Icons.remove, size: 14),
+              padding: EdgeInsets.zero,
+              color: Theme.of(context).iconTheme.color,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: IconButton(
-                    onPressed: onDecrement,
-                    icon: Icon(Icons.remove, size: 14),
-                    padding: EdgeInsets.zero,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                ),
-                SizedBox(
-                  width: 32,
-                  child: Text(
-                    "${item.quantity ?? 1}",
-                    textAlign: TextAlign.center,
-                    style: commonTextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: IconButton(
-                    onPressed: onIncrement,
-                    icon: Icon(Icons.add, size: 14),
-                    padding: EdgeInsets.zero,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                ),
-              ],
+          ),
+          SizedBox(
+            width: 32,
+            child: Text(
+              "${item.quantity ?? 1}",
+              textAlign: TextAlign.center,
+              style: commonTextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             ),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              "${Keys.inr} ${item.productInventory?.price}",
-              style: commonTextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+            child: IconButton(
+              onPressed: onIncrement,
+              icon: Icon(Icons.add, size: 14),
+              padding: EdgeInsets.zero,
+              color: Theme.of(context).iconTheme.color,
             ),
           ),
         ],

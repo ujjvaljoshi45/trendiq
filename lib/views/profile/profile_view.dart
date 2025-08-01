@@ -5,6 +5,7 @@ import 'package:trendiq/constants/route_key.dart';
 import 'package:trendiq/services/app_colors.dart';
 import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/services/extensions.dart';
+import 'package:trendiq/services/storage_service.dart';
 import 'package:trendiq/services/theme/theme_bloc.dart';
 import 'package:trendiq/services/theme/theme_event.dart';
 import 'package:trendiq/services/theme/theme_state.dart';
@@ -23,11 +24,18 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   late final AuthBloc authBloc;
+
   @override
   void initState() {
     authBloc = BlocProvider.of<AuthBloc>(context);
+    if (StorageService().getEmail() != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        authBloc.add(AuthRefreshEvent());
+      });
+    }
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeBloc, ThemeState>(
@@ -35,12 +43,11 @@ class _ProfileViewState extends State<ProfileView> {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
             if (authState is AuthLoadingState) {
-              return Skeletonizer(
-                enabled: true,
-                child: _buildAuthenticatedProfile(context, null),
-              );
+              return _buildAuthenticatedProfile(context, null);
             } else if (authState is AuthLoadedState) {
-              return _buildAuthenticatedProfile(context, authBloc.user);
+              return Skeletonizer(
+                enabled: authState is AuthLoadingState,
+                  child: _buildAuthenticatedProfile(context, authBloc.user));
             } else {
               return _buildUnauthenticatedProfile(context);
             }
@@ -92,10 +99,7 @@ class _ProfileViewState extends State<ProfileView> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: appColors.background,
-                    border: Border.all(
-                      color: appColors.background,
-                      width: 2.5,
-                    ),
+                    border: Border.all(color: appColors.background, width: 2.5),
                     boxShadow: [
                       BoxShadow(
                         color: Color.fromRGBO(0, 0, 0, 0.1),
@@ -105,8 +109,9 @@ class _ProfileViewState extends State<ProfileView> {
                     ],
                   ),
                   child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: _buildAvatarFallback(userName)),
+                    borderRadius: BorderRadius.circular(50),
+                    child: _buildAvatarFallback(userName),
+                  ),
                 ),
                 8.sBh,
                 // User Name
@@ -136,18 +141,12 @@ class _ProfileViewState extends State<ProfileView> {
             padding: const EdgeInsets.all(12.0),
             child: Row(
               children: [
-                _buildStatItem(context, "3", "Orders"),
-                Container(
-                  height: 40,
-                  width: 1.2,
-                  color: Color.fromRGBO(
-                    appColors.outline.red,
-                    appColors.outline.green,
-                    appColors.outline.blue,
-                    0.5,
-                  ),
+                _buildStatItem(
+                  context,
+                  authBloc.user?.orderCount ?? "-",
+                  "Orders",
                 ),
-                _buildStatItem(context, "7", "Wishlist"),
+
                 if (user?.createdAt != null) ...[
                   Container(
                     height: 40,
@@ -160,9 +159,12 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   ),
                   _buildStatItem(
-                      context, getDateStr(user!.createdAt), "Member Since",
-                      headerFontSize: 14),
-                ]
+                    context,
+                    getDateStr(user!.createdAt),
+                    "Member Since",
+                    headerFontSize: 14,
+                  ),
+                ],
               ],
             ),
           ),
@@ -185,16 +187,18 @@ class _ProfileViewState extends State<ProfileView> {
                   icon: Icons.shopping_cart_outlined,
                   title: "Orders",
                   subtitle: "View Orders",
-                  onTap: () =>
-                      Navigator.pushNamed(context, RoutesKey.order),
+                  onTap: () => Navigator.pushNamed(context, RoutesKey.order),
                 ),
                 _buildProfileMenuItem(
                   context,
                   icon: Icons.lock_outline,
                   title: "Update Password",
                   subtitle: "Change your password",
-                  onTap: () =>
-                      Navigator.pushNamed(context, RoutesKey.updatePassword),
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        RoutesKey.updatePassword,
+                      ),
                 ),
                 _buildProfileMenuItem(
                   context,
@@ -215,8 +219,9 @@ class _ProfileViewState extends State<ProfileView> {
                   toggle: true,
                   toggleValue: appColors.isDark,
                   onTap: () {
-                    BlocProvider.of<ThemeBloc>(context).add(
-                        appColors.isDark ? SetLightTheme() : SetDarkTheme());
+                    BlocProvider.of<ThemeBloc>(
+                      context,
+                    ).add(appColors.isDark ? SetLightTheme() : SetDarkTheme());
                   },
                 ),
                 // Support Section
@@ -236,7 +241,9 @@ class _ProfileViewState extends State<ProfileView> {
                   title: "Terms & Conditions",
                   subtitle: "Read about our terms of service",
                   onTap: () {
-                    launchUrl("https://trendiq-fe.vercel.app/profile?tab=terms");
+                    launchUrl(
+                      "https://trendiq-fe.vercel.app/profile?tab=terms",
+                    );
                   },
                 ),
                 _buildProfileMenuItem(
@@ -245,7 +252,9 @@ class _ProfileViewState extends State<ProfileView> {
                   title: "Privacy Policy",
                   subtitle: "How we handle your data",
                   onTap: () {
-                    launchUrl("https://trendiq-fe.vercel.app/profile?tab=terms");
+                    launchUrl(
+                      "https://trendiq-fe.vercel.app/profile?tab=terms",
+                    );
                   },
                 ),
                 // Logout Button
@@ -256,19 +265,15 @@ class _ProfileViewState extends State<ProfileView> {
                     height: 54,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: appColors.primary,
-                        width: 1.5,
-                      ),
+                      border: Border.all(color: appColors.primary, width: 1.5),
                     ),
                     child: TextButton.icon(
                       onPressed: () {
-                        BlocProvider.of<AuthBloc>(context).add(AuthLogoutEvent());
+                        BlocProvider.of<AuthBloc>(
+                          context,
+                        ).add(AuthLogoutEvent());
                       },
-                      icon: Icon(
-                        Icons.logout,
-                        color: appColors.primary,
-                      ),
+                      icon: Icon(Icons.logout, color: appColors.primary),
                       label: Text(
                         "Log Out",
                         style: commonTextStyle(
@@ -430,13 +435,14 @@ class _ProfileViewState extends State<ProfileView> {
 
   // Helper Widgets
   Widget _buildAvatarFallback(String userName) {
-    final initials = userName.isNotEmpty
-        ? userName
-        .split(' ')
-        .map((e) => e.isNotEmpty ? e[0] : '')
-        .join()
-        .toUpperCase()
-        : 'U';
+    final initials =
+        userName.isNotEmpty
+            ? userName
+                .split(' ')
+                .map((e) => e.isNotEmpty ? e[0] : '')
+                .join()
+                .toUpperCase()
+            : 'U';
 
     return Container(
       color: appColors.primary,
@@ -454,30 +460,36 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String value, String label,
-      {double? headerFontSize}) {
+  Widget _buildStatItem(
+    BuildContext context,
+    String value,
+    String label, {
+    double? headerFontSize,
+  }) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              value,
-              maxLines: 2,
-              style: commonTextStyle(
-                fontSize: headerFontSize ?? 22,
-                fontWeight: FontWeight.bold,
-                color: appColors.primary,
-                fontFamily: Fonts.fontBold,
+            FittedBox(
+              child: Text(
+                value,
+                maxLines: 2,
+                style: commonTextStyle(
+                  fontSize: headerFontSize ?? 18,
+                  fontWeight: FontWeight.bold,
+                  color: appColors.primary,
+                  fontFamily: Fonts.fontBold,
+                ),
               ),
             ),
             3.sBh,
             Text(
               label,
               style: commonTextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 color: Color.fromRGBO(
                   appColors.onBackground.red,
                   appColors.onBackground.green,
@@ -525,15 +537,15 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildProfileMenuItem(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        required String subtitle,
-        String? badge,
-        bool toggle = false,
-        bool toggleValue = false,
-        required VoidCallback onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    String? badge,
+    bool toggle = false,
+    bool toggleValue = false,
+    required VoidCallback onTap,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(

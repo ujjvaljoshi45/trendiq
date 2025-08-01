@@ -5,6 +5,7 @@ import 'package:trendiq/constants/fonts.dart';
 import 'package:trendiq/constants/keys.dart';
 import 'package:trendiq/models/order.dart';
 import 'package:trendiq/services/app_colors.dart';
+import 'package:trendiq/views/product_view/product_view.dart';
 
 class OrderDetailView extends StatefulWidget {
   final Order order;
@@ -188,77 +189,84 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                     Divider(color: appColors.divider, height: 24),
             itemBuilder: (context, index) {
               final product = widget.order.products[index];
-              return Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: appColors.divider),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(7),
-                      child: Image.network(
-                        product.imageUrl ?? '',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: appColors.primary.withOpacity(0.05),
-                            child: Icon(
-                              Icons.image_outlined,
-                              size: 24,
-                              color: appColors.textSecondary,
-                            ),
-                          );
-                        },
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                    return ProductPage(productId: product.id);
+                  },));
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: appColors.divider),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(7),
+                        child: Image.network(
+                          product.imageUrl ?? '',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: appColors.primary.withOpacity(0.05),
+                              child: Icon(
+                                Icons.image_outlined,
+                                size: 24,
+                                color: appColors.textSecondary,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.title ?? '-',
-                          style: commonTextStyle(
-                            fontSize: 14,
-                            fontFamily: Fonts.fontMedium,
-                            color: appColors.textPrimary,
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product.title ?? '-',
+                            style: commonTextStyle(
+                              fontSize: 14,
+                              fontFamily: Fonts.fontMedium,
+                              color: appColors.textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Size: ${product.size?.name ?? "-"}',
-                          style: commonTextStyle(
-                            fontSize: 12,
-                            color: appColors.textSecondary,
+                          SizedBox(height: 4),
+                          Text(
+                            'Size: ${product.size?.name ?? "-"}',
+                            style: commonTextStyle(
+                              fontSize: 12,
+                              color: appColors.textSecondary,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 4),
-                        //TODO: get QTY
-                        Text(
-                          'Qty: -',
-                          style: commonTextStyle(
-                            fontSize: 12,
-                            color: appColors.textSecondary,
+                          SizedBox(height: 4),
+                          //TODO: get QTY
+                          Text(
+                            'Qty: -',
+                            style: commonTextStyle(
+                              fontSize: 12,
+                              color: appColors.textSecondary,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${Keys.inr}${(product.price ?? 0).toStringAsFixed(2)}',
-                    style: commonTextStyle(
-                      fontSize: 14,
-                      fontFamily: Fonts.fontSemiBold,
-                      color: appColors.primary,
+                    Text(
+                      '${Keys.inr}${(product.price)}',
+                      style: commonTextStyle(
+                        fontSize: 14,
+                        fontFamily: Fonts.fontSemiBold,
+                        color: appColors.primary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           ),
@@ -289,7 +297,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
           SizedBox(height: 16),
           _buildSummaryRow(
             'Subtotal',
-            '${Keys.inr}${(widget.order.finalAmount ?? 0).toStringAsFixed(2)}',
+            '${Keys.inr}${(widget.order.finalAmount)}',
           ),
           SizedBox(height: 12),
           Container(height: 1, color: appColors.divider),
@@ -306,7 +314,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 ),
               ),
               Text(
-                '${Keys.inr}${(widget.order.finalAmount ?? 0).toStringAsFixed(2)}',
+                '${Keys.inr}${(widget.order.finalAmount)}',
                 style: commonTextStyle(
                   fontSize: 18,
                   fontFamily: Fonts.fontBold,

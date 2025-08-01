@@ -54,9 +54,17 @@ class _CartViewState extends State<CartView> {
                     if (shipmentId == null) {
                       toast("Please add address to continue", isError: true);
                     } else {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) {
+                          return PopScope(canPop: false, child: SizedBox());
+                        },
+                      );
                       final response = await PaymentService()
                           .startStripPaymentIntent(shipmentId: shipmentId);
 
+                      Navigator.pop(context);
                       showOrderDialog(
                         context,
                         !response.isError,
@@ -242,51 +250,54 @@ class _CartViewState extends State<CartView> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                isSuccess ? Icons.check_circle : Icons.error,
-                color: isSuccess ? Colors.green : Colors.red,
-                size: 64,
-              ),
-              SizedBox(height: 16),
-              Text(
-                isSuccess ? 'Order Placed!' : 'Order Failed',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: isSuccess ? Colors.green[800] : Colors.red[800],
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isSuccess ? Icons.check_circle : Icons.error,
+                  color: isSuccess ? Colors.green : Colors.red,
+                  size: 64,
                 ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: commonTextStyle(fontSize: 16, color: Colors.grey[600]),
-              ),
-              SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(
-                    context,
-                  ).pushNamedAndRemoveUntil(RoutesKey.home, (route) => false);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSuccess ? Colors.green : Colors.red,
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                SizedBox(height: 16),
+                Text(
+                  isSuccess ? 'Order Placed!' : 'Order Failed',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: isSuccess ? Colors.green[800] : Colors.red[800],
                   ),
                 ),
-                child: Text(isSuccess ? 'Continue Shopping' : 'Go to Home'),
-              ),
-            ],
+                SizedBox(height: 8),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: commonTextStyle(fontSize: 16, color: Colors.grey[600]),
+                ),
+                SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(RoutesKey.home, (route) => false);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isSuccess ? Colors.green : Colors.red,
+                    foregroundColor: Colors.white,
+                    minimumSize: Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(isSuccess ? 'Continue Shopping' : 'Go to Home'),
+                ),
+              ],
+            ),
           ),
         );
       },

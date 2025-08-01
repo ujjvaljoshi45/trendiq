@@ -9,7 +9,7 @@ class Order {
   });
 
   final String? orderId;
-  final int? finalAmount;
+  final String? finalAmount;
   final DateTime? createdAt;
   final String? status;
   final OrderAddress? address;
@@ -25,10 +25,10 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
-      orderId: json["orderId"],
-      finalAmount: json["finalAmount"],
+      orderId: json["orderId"]?.toString(),
+      finalAmount: json["finalAmount"]?.toString(),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      status: json["status"],
+      status: json["status"]?.toString(),
       address:
           json["address"] == null
               ? null
@@ -62,24 +62,27 @@ class OrderProduct {
     required this.title,
     required this.description,
     required this.color,
+    required this.id,
   });
 
   final OrderProductSize? size;
-  final int? price;
+  final String? price;
   final String? imageUrl;
   final String? title;
   final String? description;
   final String? color;
+  final String id;
 
   factory OrderProduct.fromJson(Map<String, dynamic> json) {
     return OrderProduct(
       size:
           json["size"] == null ? null : OrderProductSize.fromJson(json["size"]),
-      price: json["price"],
-      imageUrl: json["imageUrl"],
-      title: json["title"],
-      description: json["description"],
-      color: json["color"],
+      price: json["price"]?.toString(),
+      imageUrl: json["imageUrl"]?.toString(),
+      title: json["title"]?.toString(),
+      description: json["description"]?.toString(),
+      color: json["color"]?.toString(),
+      id: json["id"].toString(),
     );
   }
 }
@@ -90,6 +93,6 @@ class OrderProductSize {
   final String? name;
 
   factory OrderProductSize.fromJson(Map<String, dynamic> json) {
-    return OrderProductSize(name: json["name"]);
+    return OrderProductSize(name: json["name"]?.toString());
   }
 }

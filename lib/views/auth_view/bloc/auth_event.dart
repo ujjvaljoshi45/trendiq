@@ -32,5 +32,6 @@ class AuthSocialLoginEvent extends AuthEvent {
 }
 
 class AuthLogoutEvent extends AuthEvent {}
+class AuthRefreshEvent extends AuthEvent {}
 class AuthLoadedEvent extends AuthEvent {}
 

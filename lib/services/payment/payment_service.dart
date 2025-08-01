@@ -1,6 +1,4 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:trendiq/models/api_response.dart';
 import 'package:trendiq/services/api/api_controller.dart';
@@ -14,50 +12,8 @@ class PaymentService {
 
   factory PaymentService() => _instance;
 
-
   String secret = "";
   late final String strStripPublishableKey;
-
-
-  Future<bool> startStripeCheckout({
-    required String shipmentId,
-    required BuildContext context,
-  }) async {
-    final result = await apiController.createPaymentIntent(
-      shipmentId: shipmentId,
-      isMobile: false,
-    );
-    final url = result.data?["url"]?.toString();
-    final paymentResponse = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return Dialog.fullscreen(
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text("Payment"),
-              leading: IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () => Navigator.pop(context, false),
-              ),
-            ),
-            body: InAppWebView(
-              initialUrlRequest: URLRequest(url: WebUri(url ?? "")),
-              onLoadStop: (controller, url) {
-                final urlString = url.toString();
-                if (urlString.contains('success')) {
-                  Navigator.pop(context, true);
-                } else if (urlString.contains('cancel')) {
-                  Navigator.pop(context, false);
-                }
-              },
-            ),
-          ),
-        );
-      },
-    );
-    return paymentResponse ?? false;
-  }
 
   Future<ApiResponse> startStripPaymentIntent({
     required String shipmentId,
@@ -67,9 +23,9 @@ class PaymentService {
       isMobile: true,
     );
     final intentId =
-        createPaymentIntentResponse.data?["clientSecret"]?.toString();
+    createPaymentIntentResponse.data?["clientSecret"]?.toString();
     final transactionId =
-        createPaymentIntentResponse.data?["transactionId"]?.toString();
+    createPaymentIntentResponse.data?["transactionId"]?.toString();
     if (createPaymentIntentResponse.isError ||
         intentId == null ||
         transactionId == null) {
@@ -78,13 +34,26 @@ class PaymentService {
         message: createPaymentIntentResponse.message,
       );
     }
-    await initPaymentSheet(intentId);
-    await presentPaymentSheet();
+    final initPaymentSheetResponse = await initPaymentSheet(intentId);
+
+    if (initPaymentSheetResponse.isError) {
+      return ApiResponse(
+        isError: true,
+        message: initPaymentSheetResponse.message,
+      );
+    }
+
+    final paymentSheetResponse = await presentPaymentSheet();
+
+    if (paymentSheetResponse.isError) {
+      return ApiResponse(isError: true, message: paymentSheetResponse.message);
+    }
+
     return await apiController.completePayment(tranId: transactionId);
   }
 
   // Strip Impl
-  Future<void> initPaymentSheet(String intentId) async {
+  Future<ApiResponse> initPaymentSheet(String intentId) async {
     try {
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
@@ -93,18 +62,37 @@ class PaymentService {
           style: appColors.isDark ? ThemeMode.dark : ThemeMode.light,
         ),
       );
-    } catch (error, stackTrace) {
-      LogService().logError("Strip INIT Error", error, stackTrace);
+      return ApiResponse(isError: false);
+    } on StripeError catch (error) {
+      return ApiResponse(isError: true, message: error.message);
     }
   }
 
-  Future<bool> presentPaymentSheet() async {
+  Future<ApiResponse> presentPaymentSheet() async {
     try {
       await Stripe.instance.presentPaymentSheet();
-      return true;
-    } catch (error, stackTrace) {
-      LogService().logError("Strip Present Error", error, stackTrace);
-      return false;
+      return ApiResponse(isError: false);
+    } on StripeException catch (error) {
+      String errorMessage;
+      switch (error.error.code) {
+        case FailureCode.Failed:
+          errorMessage =
+          "Payment Is Failed, if money is debited from your account it will be refunded shortly";
+          break;
+        case FailureCode.Canceled:
+          errorMessage = "Payment Canceled";
+          break;
+        case FailureCode.Timeout:
+          errorMessage = "Payment Timeout";
+          break;
+        case FailureCode.Unknown:
+          errorMessage = "Unknown Error Occurred.";
+          break;
+      }
+      return ApiResponse(
+          isError: true, message: errorMessage);
+    } catch (error) {
+      return ApiResponse.unknown();
     }
   }
 
@@ -118,69 +106,4 @@ class PaymentService {
       return null;
     }
   }
-
-  // Razorpay Impl
-  // Future<RazorpayOrder?> createRazorpayOrder({
-  //   required int amount,
-  //   required String cartId,
-  // }) async {
-  //   try {
-  //     String basicAuth =
-  //         'Basic ${base64Encode(utf8.encode('$testKeyId:$secret'))}';
-  //     final response = await Dio().post(
-  //       "https://api.razorpay.com/v1/orders",
-  //       options: Options(
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           "Authorization": basicAuth,
-  //         },
-  //       ),
-  //       data: {
-  //         "amount": amount,
-  //         "currency": "INR",
-  //         "receipt": cartId,
-  //         "notes": {"cartId": cartId},
-  //       },
-  //     );
-  //     return RazorpayOrder.fromJson(response.data);
-  //   } on DioException catch (_) {
-  //     return null;
-  //   } catch (e) {
-  //     return null;
-  //   }
-  // }
-
-  // Future<void> callRazorpay({
-  //   required String amount,
-  //   required String cartId,
-  //   required String description,
-  //   required void Function(PaymentSuccessResponse) onSuccess,
-  //   required void Function(PaymentFailureResponse) onFailure,
-  // }) async {
-  //   final intAmount = getRazorpayOrderAmount(amount);
-  //   final String? orderId =
-  //       (await createRazorpayOrder(amount: intAmount, cartId: cartId))?.id;
-  //
-  //   if (orderId == null) {
-  //     toast("Unable to Create Order", isError: true);
-  //     return;
-  //   }
-  //   final Map<String, dynamic> options = {
-  //     'key': testKeyId,
-  //     'amount': intAmount,
-  //     'currency': 'INR',
-  //     'name': 'TrendiQ',
-  //     'order_id': orderId, // Generate order_id using Orders API
-  //     'description': description,
-  //     'timeout': 300, // in seconds
-  //     'prefill': {'contact': null, 'email': StorageService().getEmail() ?? ""},
-  //   };
-  //   razorpay.open(options);
-  //   razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, onSuccess);
-  //   razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, onFailure);
-  // }
-
-  // int getRazorpayOrderAmount(String amount) {
-  //   return int.parse("${amount}00");
-  // }
 }

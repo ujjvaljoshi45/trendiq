@@ -51,7 +51,23 @@ mixin UserAuthApis on Api {
       return ApiResponse.fromJson(response.data, response.data[Keys.data]);
     } on DioException catch (e) {
       return ApiResponse.fromDioException(e);
-    } catch (e){
+    } catch (e) {
+      return ApiResponse.unknown();
+    }
+  }
+
+  Future<ApiResponse<UserModel>> getAppUser() async {
+    try {
+      final response = await api.get(ApiConstants.userGetUserDetails);
+      final result = ApiResponse.fromJson(
+        response.data,
+        UserModel.fromJson(response.data["data"])
+      );
+      StorageService().saveEmail(result.data?.email ?? "");
+      return result;
+    } on DioException catch (e) {
+      return ApiResponse.fromDioException(e);
+    } catch (e) {
       return ApiResponse.unknown();
     }
   }
