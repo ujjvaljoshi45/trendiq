@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAtRmB7JgcQKsQ5Iu1kH1OHf4knolP64e8',
-    appId: '1:1069924139973:android:cd2191c5bbcf60573f81ac',
+    appId: '1:1069924139973:android:b44fe12954232d003f81ac',
     messagingSenderId: '1069924139973',
     projectId: 'trendyq-3c8d5',
     storageBucket: 'trendyq-3c8d5.firebasestorage.app',
@@ -63,6 +63,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1069924139973',
     projectId: 'trendyq-3c8d5',
     storageBucket: 'trendyq-3c8d5.firebasestorage.app',
+    androidClientId: '1069924139973-mgohootahltojshr7mbjc8ioochcr5gg.apps.googleusercontent.com',
+    iosClientId: '1069924139973-sutf553s5fjsc0b4gi0uei30lme58sos.apps.googleusercontent.com',
     iosBundleId: 'com.ujjval.trendiq',
   );
+
 }

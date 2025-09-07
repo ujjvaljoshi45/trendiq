@@ -27,7 +27,7 @@ import 'package:trendiq/views/wishlist/bloc/wishlist_bloc.dart';
 
 import 'firebase_options.dart';
 
-void main() async {
+void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
